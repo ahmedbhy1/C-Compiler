@@ -1,0 +1,46 @@
+{
+	"sources" : 
+	[
+		{
+			"file" : "/home/abelhadjyo/T\u00e9l\u00e9chargements/compilateur/pld-comp/antlr.tmp/build/runtime/CMakeFiles/utfcpp"
+		},
+		{
+			"file" : "/home/abelhadjyo/T\u00e9l\u00e9chargements/compilateur/pld-comp/antlr.tmp/build/runtime/CMakeFiles/utfcpp.rule"
+		},
+		{
+			"file" : "/home/abelhadjyo/T\u00e9l\u00e9chargements/compilateur/pld-comp/antlr.tmp/build/runtime/CMakeFiles/utfcpp-complete.rule"
+		},
+		{
+			"file" : "/home/abelhadjyo/T\u00e9l\u00e9chargements/compilateur/pld-comp/antlr.tmp/build/runtime/utfcpp-prefix/src/utfcpp-stamp/utfcpp-build.rule"
+		},
+		{
+			"file" : "/home/abelhadjyo/T\u00e9l\u00e9chargements/compilateur/pld-comp/antlr.tmp/build/runtime/utfcpp-prefix/src/utfcpp-stamp/utfcpp-configure.rule"
+		},
+		{
+			"file" : "/home/abelhadjyo/T\u00e9l\u00e9chargements/compilateur/pld-comp/antlr.tmp/build/runtime/utfcpp-prefix/src/utfcpp-stamp/utfcpp-download.rule"
+		},
+		{
+			"file" : "/home/abelhadjyo/T\u00e9l\u00e9chargements/compilateur/pld-comp/antlr.tmp/build/runtime/utfcpp-prefix/src/utfcpp-stamp/utfcpp-install.rule"
+		},
+		{
+			"file" : "/home/abelhadjyo/T\u00e9l\u00e9chargements/compilateur/pld-comp/antlr.tmp/build/runtime/utfcpp-prefix/src/utfcpp-stamp/utfcpp-mkdir.rule"
+		},
+		{
+			"file" : "/home/abelhadjyo/T\u00e9l\u00e9chargements/compilateur/pld-comp/antlr.tmp/build/runtime/utfcpp-prefix/src/utfcpp-stamp/utfcpp-patch_disconnected.rule"
+		},
+		{
+			"file" : "/home/abelhadjyo/T\u00e9l\u00e9chargements/compilateur/pld-comp/antlr.tmp/build/runtime/utfcpp-prefix/src/utfcpp-stamp/utfcpp-test.rule"
+		},
+		{
+			"file" : "/home/abelhadjyo/T\u00e9l\u00e9chargements/compilateur/pld-comp/antlr.tmp/build/runtime/utfcpp-prefix/src/utfcpp-stamp/utfcpp-update_disconnected.rule"
+		}
+	],
+	"target" : 
+	{
+		"labels" : 
+		[
+			"utfcpp"
+		],
+		"name" : "utfcpp"
+	}
+}

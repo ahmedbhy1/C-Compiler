@@ -1,0 +1,11 @@
+# Target labels
+ utfcpp
+# Source files and their labels
+/home/abelhadjyo/Téléchargements/compilateur/pld-comp/antlr.tmp/build/runtime/CMakeFiles/utfcpp-build
+/home/abelhadjyo/Téléchargements/compilateur/pld-comp/antlr.tmp/build/runtime/CMakeFiles/utfcpp-build.rule
+/home/abelhadjyo/Téléchargements/compilateur/pld-comp/antlr.tmp/build/runtime/utfcpp-prefix/src/utfcpp-stamp/utfcpp-build.rule
+/home/abelhadjyo/Téléchargements/compilateur/pld-comp/antlr.tmp/build/runtime/utfcpp-prefix/src/utfcpp-stamp/utfcpp-configure.rule
+/home/abelhadjyo/Téléchargements/compilateur/pld-comp/antlr.tmp/build/runtime/utfcpp-prefix/src/utfcpp-stamp/utfcpp-patch_disconnected.rule
+/home/abelhadjyo/Téléchargements/compilateur/pld-comp/antlr.tmp/build/runtime/utfcpp-prefix/src/utfcpp-stamp/utfcpp-update_disconnected.rule
+/home/abelhadjyo/Téléchargements/compilateur/pld-comp/antlr.tmp/build/runtime/utfcpp-prefix/src/utfcpp-stamp/utfcpp-download.rule
+/home/abelhadjyo/Téléchargements/compilateur/pld-comp/antlr.tmp/build/runtime/utfcpp-prefix/src/utfcpp-stamp/utfcpp-mkdir.rule
