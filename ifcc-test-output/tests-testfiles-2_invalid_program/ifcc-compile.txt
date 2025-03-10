@@ -1,0 +1,3 @@
+/Users/xwass/compilateur/tests/ifcc-wrapper.sh: line 21: /Users/xwass/compilateur/tests/../compiler/ifcc: cannot execute binary file
+
+exit status: 126

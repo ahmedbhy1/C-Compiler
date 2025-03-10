@@ -18,14 +18,17 @@ ifccParser::~ifccParser() {
   delete _interpreter;
 }
 
+
 std::string ifccParser::getGrammarFileName() const {
   return "ifcc.g4";
 }
 
+// get list of rule names defined in the grammar
 const std::vector<std::string>& ifccParser::getRuleNames() const {
   return _ruleNames;
 }
 
+//provides access to the vocabulary used by the parser
 dfa::Vocabulary& ifccParser::getVocabulary() const {
   return _vocabulary;
 }
@@ -33,6 +36,7 @@ dfa::Vocabulary& ifccParser::getVocabulary() const {
 
 //----------------- AxiomContext ------------------------------------------------------------------
 
+// an instance of AxiomContext, enters the rule, and matches the 'prog' rule
 ifccParser::AxiomContext::AxiomContext(ParserRuleContext *parent, size_t invokingState)
   : ParserRuleContext(parent, invokingState) {
 }
@@ -209,6 +213,8 @@ std::vector<std::string> ifccParser::_symbolicNames = {
   "", "", "", "", "", "", "", "", "RETURN", "CONST", "COMMENT", "DIRECTIVE", 
   "WS"
 };
+
+
 
 dfa::Vocabulary ifccParser::_vocabulary(_literalNames, _symbolicNames);
 
