@@ -41,12 +41,12 @@ int main(int argn, const char **argv)
   tree::ParseTree* tree = parser.axiom();
   Token* t = parser.getCurrentToken();
   
-  cout << "token list =" << endl;
-  
-  for(int i =0;i<tokens.getTokens().size();i++){
-    cout << "tocken "<< i << " = " << tokens.get(i)->getText() << endl;
-  }
-  
+  #ifdef DEBUG
+    cout << "token list =" << endl;
+    for(int i =0;i<tokens.getTokens().size();i++){
+      cout << "tocken "<< i << " = " << tokens.get(i)->getText() << endl;
+    }
+  #endif
   if(parser.getNumberOfSyntaxErrors() != 0)
   {
       cerr << "error: syntax error during parsing" << endl;
