@@ -42,10 +42,10 @@ int main(int argn, const char **argv)
   Token* t = parser.getCurrentToken();
   
   #ifdef DEBUG
-    cout << "token list =" << endl;
-    for(int i =0;i<tokens.getTokens().size();i++){
-      cout << "tocken "<< i << " = " << tokens.get(i)->getText() << endl;
-    }
+    //cout << "token list =" << endl;
+    //for(int i =0;i<tokens.getTokens().size();i++){
+    //  cout << "tocken "<< i << " = " << tokens.get(i)->getText() << endl;
+    //}
   #endif
   if(parser.getNumberOfSyntaxErrors() != 0)
   {
