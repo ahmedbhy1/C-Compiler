@@ -1,0 +1,29 @@
+asm-ifcc.s: Messages de l'assembleur:
+asm-ifcc.s:1: Erreur: pas de telle instruction: « token list= »
+asm-ifcc.s:2: Erreur: pas de telle instruction: « tocken 0=int »
+asm-ifcc.s:3: Erreur: pas de telle instruction: « tocken 1= »
+asm-ifcc.s:4: Erreur: pas de telle instruction: « tocken 2=main »
+asm-ifcc.s:5: Erreur: pas de telle instruction: « tocken 3=( »
+asm-ifcc.s:6: Erreur: pas de telle instruction: « tocken 4=) »
+asm-ifcc.s:7: Erreur: pas de telle instruction: « tocken 5= »
+asm-ifcc.s:8: Erreur: pas de telle instruction: « tocken 6={ »
+asm-ifcc.s:9: Erreur: pas de telle instruction: « tocken 7= »
+asm-ifcc.s:11: Erreur: pas de telle instruction: « tocken 8=int »
+asm-ifcc.s:12: Erreur: pas de telle instruction: « tocken 9= »
+asm-ifcc.s:13: Erreur: pas de telle instruction: « tocken 10=x »
+asm-ifcc.s:14: Erreur: pas de telle instruction: « tocken 11= »
+asm-ifcc.s:15: Erreur: pas de telle instruction: « tocken 12== »
+asm-ifcc.s:16: Erreur: pas de telle instruction: « tocken 13= »
+asm-ifcc.s:17: Erreur: pas de telle instruction: « tocken 14=2 »
+asm-ifcc.s:18: Erreur: pas de telle instruction: « tocken 15= »
+asm-ifcc.s:19: Erreur: pas de telle instruction: « tocken 16= »
+asm-ifcc.s:21: Erreur: pas de telle instruction: « tocken 17=return »
+asm-ifcc.s:22: Erreur: pas de telle instruction: « tocken 18= »
+asm-ifcc.s:23: Erreur: pas de telle instruction: « tocken 19=42 »
+asm-ifcc.s:24: Erreur: pas de telle instruction: « tocken 20= »
+asm-ifcc.s:25: Erreur: pas de telle instruction: « tocken 21= »
+asm-ifcc.s:27: Erreur: pas de telle instruction: « tocken 22=} »
+asm-ifcc.s:28: Erreur: pas de telle instruction: « tocken 23= »
+asm-ifcc.s:30: Erreur: pas de telle instruction: « tocken 24=<EOF> »
+
+exit status: 1

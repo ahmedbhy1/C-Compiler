@@ -37,11 +37,16 @@ int main(int argn, const char **argv)
   ifccLexer lexer(&input);
   CommonTokenStream tokens(&lexer);
 
-  tokens.fill();
-
   ifccParser parser(&tokens);
   tree::ParseTree* tree = parser.axiom();
-
+  Token* t = parser.getCurrentToken();
+  
+  #ifdef DEBUG
+    //cout << "token list =" << endl;
+    //for(int i =0;i<tokens.getTokens().size();i++){
+    //  cout << "tocken "<< i << " = " << tokens.get(i)->getText() << endl;
+    //}
+  #endif
   if(parser.getNumberOfSyntaxErrors() != 0)
   {
       cerr << "error: syntax error during parsing" << endl;

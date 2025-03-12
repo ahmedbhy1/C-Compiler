@@ -23,7 +23,15 @@ public:
 
     virtual antlrcpp::Any visitProg(ifccParser::ProgContext *context) = 0;
 
+    virtual antlrcpp::Any visitStmt(ifccParser::StmtContext *context) = 0;
+
+    virtual antlrcpp::Any visitDecl_stmt(ifccParser::Decl_stmtContext *context) = 0;
+
+    virtual antlrcpp::Any visitAssign_stmt(ifccParser::Assign_stmtContext *context) = 0;
+
     virtual antlrcpp::Any visitReturn_stmt(ifccParser::Return_stmtContext *context) = 0;
+
+    virtual antlrcpp::Any visitExpr(ifccParser::ExprContext *context) = 0;
 
 
 };

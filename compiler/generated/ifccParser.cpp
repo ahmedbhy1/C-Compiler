@@ -66,9 +66,9 @@ ifccParser::AxiomContext* ifccParser::axiom() {
   });
   try {
     enterOuterAlt(_localctx, 1);
-    setState(6);
+    setState(14);
     prog();
-    setState(7);
+    setState(15);
     match(ifccParser::EOF);
    
   }
@@ -87,8 +87,12 @@ ifccParser::ProgContext::ProgContext(ParserRuleContext *parent, size_t invokingS
   : ParserRuleContext(parent, invokingState) {
 }
 
-ifccParser::Return_stmtContext* ifccParser::ProgContext::return_stmt() {
-  return getRuleContext<ifccParser::Return_stmtContext>(0);
+std::vector<ifccParser::StmtContext *> ifccParser::ProgContext::stmt() {
+  return getRuleContexts<ifccParser::StmtContext>();
+}
+
+ifccParser::StmtContext* ifccParser::ProgContext::stmt(size_t i) {
+  return getRuleContext<ifccParser::StmtContext>(i);
 }
 
 
@@ -106,26 +110,231 @@ antlrcpp::Any ifccParser::ProgContext::accept(tree::ParseTreeVisitor *visitor) {
 ifccParser::ProgContext* ifccParser::prog() {
   ProgContext *_localctx = _tracker.createInstance<ProgContext>(_ctx, getState());
   enterRule(_localctx, 2, ifccParser::RuleProg);
+  size_t _la = 0;
 
   auto onExit = finally([=] {
     exitRule();
   });
   try {
     enterOuterAlt(_localctx, 1);
-    setState(9);
+    setState(17);
     match(ifccParser::T__0);
-    setState(10);
+    setState(18);
     match(ifccParser::T__1);
-    setState(11);
+    setState(19);
     match(ifccParser::T__2);
-    setState(12);
+    setState(20);
     match(ifccParser::T__3);
-    setState(13);
+    setState(21);
     match(ifccParser::T__4);
-    setState(14);
-    return_stmt();
-    setState(15);
+    setState(25);
+    _errHandler->sync(this);
+    _la = _input->LA(1);
+    while ((((_la & ~ 0x3fULL) == 0) &&
+      ((1ULL << _la) & ((1ULL << ifccParser::T__0)
+      | (1ULL << ifccParser::RETURN)
+      | (1ULL << ifccParser::ID))) != 0)) {
+      setState(22);
+      stmt();
+      setState(27);
+      _errHandler->sync(this);
+      _la = _input->LA(1);
+    }
+    setState(28);
     match(ifccParser::T__5);
+   
+  }
+  catch (RecognitionException &e) {
+    _errHandler->reportError(this, e);
+    _localctx->exception = std::current_exception();
+    _errHandler->recover(this, _localctx->exception);
+  }
+
+  return _localctx;
+}
+
+//----------------- StmtContext ------------------------------------------------------------------
+
+ifccParser::StmtContext::StmtContext(ParserRuleContext *parent, size_t invokingState)
+  : ParserRuleContext(parent, invokingState) {
+}
+
+ifccParser::Decl_stmtContext* ifccParser::StmtContext::decl_stmt() {
+  return getRuleContext<ifccParser::Decl_stmtContext>(0);
+}
+
+ifccParser::Assign_stmtContext* ifccParser::StmtContext::assign_stmt() {
+  return getRuleContext<ifccParser::Assign_stmtContext>(0);
+}
+
+ifccParser::Return_stmtContext* ifccParser::StmtContext::return_stmt() {
+  return getRuleContext<ifccParser::Return_stmtContext>(0);
+}
+
+
+size_t ifccParser::StmtContext::getRuleIndex() const {
+  return ifccParser::RuleStmt;
+}
+
+antlrcpp::Any ifccParser::StmtContext::accept(tree::ParseTreeVisitor *visitor) {
+  if (auto parserVisitor = dynamic_cast<ifccVisitor*>(visitor))
+    return parserVisitor->visitStmt(this);
+  else
+    return visitor->visitChildren(this);
+}
+
+ifccParser::StmtContext* ifccParser::stmt() {
+  StmtContext *_localctx = _tracker.createInstance<StmtContext>(_ctx, getState());
+  enterRule(_localctx, 4, ifccParser::RuleStmt);
+
+  auto onExit = finally([=] {
+    exitRule();
+  });
+  try {
+    setState(33);
+    _errHandler->sync(this);
+    switch (_input->LA(1)) {
+      case ifccParser::T__0: {
+        enterOuterAlt(_localctx, 1);
+        setState(30);
+        decl_stmt();
+        break;
+      }
+
+      case ifccParser::ID: {
+        enterOuterAlt(_localctx, 2);
+        setState(31);
+        assign_stmt();
+        break;
+      }
+
+      case ifccParser::RETURN: {
+        enterOuterAlt(_localctx, 3);
+        setState(32);
+        return_stmt();
+        break;
+      }
+
+    default:
+      throw NoViableAltException(this);
+    }
+   
+  }
+  catch (RecognitionException &e) {
+    _errHandler->reportError(this, e);
+    _localctx->exception = std::current_exception();
+    _errHandler->recover(this, _localctx->exception);
+  }
+
+  return _localctx;
+}
+
+//----------------- Decl_stmtContext ------------------------------------------------------------------
+
+ifccParser::Decl_stmtContext::Decl_stmtContext(ParserRuleContext *parent, size_t invokingState)
+  : ParserRuleContext(parent, invokingState) {
+}
+
+tree::TerminalNode* ifccParser::Decl_stmtContext::ID() {
+  return getToken(ifccParser::ID, 0);
+}
+
+ifccParser::ExprContext* ifccParser::Decl_stmtContext::expr() {
+  return getRuleContext<ifccParser::ExprContext>(0);
+}
+
+
+size_t ifccParser::Decl_stmtContext::getRuleIndex() const {
+  return ifccParser::RuleDecl_stmt;
+}
+
+antlrcpp::Any ifccParser::Decl_stmtContext::accept(tree::ParseTreeVisitor *visitor) {
+  if (auto parserVisitor = dynamic_cast<ifccVisitor*>(visitor))
+    return parserVisitor->visitDecl_stmt(this);
+  else
+    return visitor->visitChildren(this);
+}
+
+ifccParser::Decl_stmtContext* ifccParser::decl_stmt() {
+  Decl_stmtContext *_localctx = _tracker.createInstance<Decl_stmtContext>(_ctx, getState());
+  enterRule(_localctx, 6, ifccParser::RuleDecl_stmt);
+  size_t _la = 0;
+
+  auto onExit = finally([=] {
+    exitRule();
+  });
+  try {
+    enterOuterAlt(_localctx, 1);
+    setState(35);
+    match(ifccParser::T__0);
+    setState(36);
+    match(ifccParser::ID);
+    setState(39);
+    _errHandler->sync(this);
+
+    _la = _input->LA(1);
+    if (_la == ifccParser::T__6) {
+      setState(37);
+      match(ifccParser::T__6);
+      setState(38);
+      expr();
+    }
+    setState(41);
+    match(ifccParser::T__7);
+   
+  }
+  catch (RecognitionException &e) {
+    _errHandler->reportError(this, e);
+    _localctx->exception = std::current_exception();
+    _errHandler->recover(this, _localctx->exception);
+  }
+
+  return _localctx;
+}
+
+//----------------- Assign_stmtContext ------------------------------------------------------------------
+
+ifccParser::Assign_stmtContext::Assign_stmtContext(ParserRuleContext *parent, size_t invokingState)
+  : ParserRuleContext(parent, invokingState) {
+}
+
+tree::TerminalNode* ifccParser::Assign_stmtContext::ID() {
+  return getToken(ifccParser::ID, 0);
+}
+
+ifccParser::ExprContext* ifccParser::Assign_stmtContext::expr() {
+  return getRuleContext<ifccParser::ExprContext>(0);
+}
+
+
+size_t ifccParser::Assign_stmtContext::getRuleIndex() const {
+  return ifccParser::RuleAssign_stmt;
+}
+
+antlrcpp::Any ifccParser::Assign_stmtContext::accept(tree::ParseTreeVisitor *visitor) {
+  if (auto parserVisitor = dynamic_cast<ifccVisitor*>(visitor))
+    return parserVisitor->visitAssign_stmt(this);
+  else
+    return visitor->visitChildren(this);
+}
+
+ifccParser::Assign_stmtContext* ifccParser::assign_stmt() {
+  Assign_stmtContext *_localctx = _tracker.createInstance<Assign_stmtContext>(_ctx, getState());
+  enterRule(_localctx, 8, ifccParser::RuleAssign_stmt);
+
+  auto onExit = finally([=] {
+    exitRule();
+  });
+  try {
+    enterOuterAlt(_localctx, 1);
+    setState(43);
+    match(ifccParser::ID);
+    setState(44);
+    match(ifccParser::T__6);
+    setState(45);
+    expr();
+    setState(46);
+    match(ifccParser::T__7);
    
   }
   catch (RecognitionException &e) {
@@ -147,8 +356,8 @@ tree::TerminalNode* ifccParser::Return_stmtContext::RETURN() {
   return getToken(ifccParser::RETURN, 0);
 }
 
-tree::TerminalNode* ifccParser::Return_stmtContext::CONST() {
-  return getToken(ifccParser::CONST, 0);
+ifccParser::ExprContext* ifccParser::Return_stmtContext::expr() {
+  return getRuleContext<ifccParser::ExprContext>(0);
 }
 
 
@@ -165,19 +374,77 @@ antlrcpp::Any ifccParser::Return_stmtContext::accept(tree::ParseTreeVisitor *vis
 
 ifccParser::Return_stmtContext* ifccParser::return_stmt() {
   Return_stmtContext *_localctx = _tracker.createInstance<Return_stmtContext>(_ctx, getState());
-  enterRule(_localctx, 4, ifccParser::RuleReturn_stmt);
+  enterRule(_localctx, 10, ifccParser::RuleReturn_stmt);
 
   auto onExit = finally([=] {
     exitRule();
   });
   try {
     enterOuterAlt(_localctx, 1);
-    setState(17);
+    setState(48);
     match(ifccParser::RETURN);
-    setState(18);
-    match(ifccParser::CONST);
-    setState(19);
-    match(ifccParser::T__6);
+    setState(49);
+    expr();
+    setState(50);
+    match(ifccParser::T__7);
+   
+  }
+  catch (RecognitionException &e) {
+    _errHandler->reportError(this, e);
+    _localctx->exception = std::current_exception();
+    _errHandler->recover(this, _localctx->exception);
+  }
+
+  return _localctx;
+}
+
+//----------------- ExprContext ------------------------------------------------------------------
+
+ifccParser::ExprContext::ExprContext(ParserRuleContext *parent, size_t invokingState)
+  : ParserRuleContext(parent, invokingState) {
+}
+
+tree::TerminalNode* ifccParser::ExprContext::ID() {
+  return getToken(ifccParser::ID, 0);
+}
+
+tree::TerminalNode* ifccParser::ExprContext::CONST() {
+  return getToken(ifccParser::CONST, 0);
+}
+
+
+size_t ifccParser::ExprContext::getRuleIndex() const {
+  return ifccParser::RuleExpr;
+}
+
+antlrcpp::Any ifccParser::ExprContext::accept(tree::ParseTreeVisitor *visitor) {
+  if (auto parserVisitor = dynamic_cast<ifccVisitor*>(visitor))
+    return parserVisitor->visitExpr(this);
+  else
+    return visitor->visitChildren(this);
+}
+
+ifccParser::ExprContext* ifccParser::expr() {
+  ExprContext *_localctx = _tracker.createInstance<ExprContext>(_ctx, getState());
+  enterRule(_localctx, 12, ifccParser::RuleExpr);
+  size_t _la = 0;
+
+  auto onExit = finally([=] {
+    exitRule();
+  });
+  try {
+    enterOuterAlt(_localctx, 1);
+    setState(52);
+    _la = _input->LA(1);
+    if (!(_la == ifccParser::ID
+
+    || _la == ifccParser::CONST)) {
+    _errHandler->recoverInline(this);
+    }
+    else {
+      _errHandler->reportMatch(this);
+      consume();
+    }
    
   }
   catch (RecognitionException &e) {
@@ -198,16 +465,16 @@ atn::ATN ifccParser::_atn;
 std::vector<uint16_t> ifccParser::_serializedATN;
 
 std::vector<std::string> ifccParser::_ruleNames = {
-  "axiom", "prog", "return_stmt"
+  "axiom", "prog", "stmt", "decl_stmt", "assign_stmt", "return_stmt", "expr"
 };
 
 std::vector<std::string> ifccParser::_literalNames = {
-  "", "'int'", "'main'", "'('", "')'", "'{'", "'}'", "';'", "'return'"
+  "", "'int'", "'main'", "'('", "')'", "'{'", "'}'", "'='", "';'", "'return'"
 };
 
 std::vector<std::string> ifccParser::_symbolicNames = {
-  "", "", "", "", "", "", "", "", "RETURN", "CONST", "COMMENT", "DIRECTIVE", 
-  "WS"
+  "", "", "", "", "", "", "", "", "", "RETURN", "ID", "CONST", "COMMENT", 
+  "DIRECTIVE", "WS"
 };
 
 dfa::Vocabulary ifccParser::_vocabulary(_literalNames, _symbolicNames);
@@ -230,19 +497,40 @@ ifccParser::Initializer::Initializer() {
 
   _serializedATN = {
     0x3, 0x608b, 0xa72a, 0x8133, 0xb9ed, 0x417c, 0x3be7, 0x7786, 0x5964, 
-    0x3, 0xe, 0x18, 0x4, 0x2, 0x9, 0x2, 0x4, 0x3, 0x9, 0x3, 0x4, 0x4, 0x9, 
-    0x4, 0x3, 0x2, 0x3, 0x2, 0x3, 0x2, 0x3, 0x3, 0x3, 0x3, 0x3, 0x3, 0x3, 
-    0x3, 0x3, 0x3, 0x3, 0x3, 0x3, 0x3, 0x3, 0x3, 0x3, 0x4, 0x3, 0x4, 0x3, 
-    0x4, 0x3, 0x4, 0x3, 0x4, 0x2, 0x2, 0x5, 0x2, 0x4, 0x6, 0x2, 0x2, 0x2, 
-    0x14, 0x2, 0x8, 0x3, 0x2, 0x2, 0x2, 0x4, 0xb, 0x3, 0x2, 0x2, 0x2, 0x6, 
-    0x13, 0x3, 0x2, 0x2, 0x2, 0x8, 0x9, 0x5, 0x4, 0x3, 0x2, 0x9, 0xa, 0x7, 
-    0x2, 0x2, 0x3, 0xa, 0x3, 0x3, 0x2, 0x2, 0x2, 0xb, 0xc, 0x7, 0x3, 0x2, 
-    0x2, 0xc, 0xd, 0x7, 0x4, 0x2, 0x2, 0xd, 0xe, 0x7, 0x5, 0x2, 0x2, 0xe, 
-    0xf, 0x7, 0x6, 0x2, 0x2, 0xf, 0x10, 0x7, 0x7, 0x2, 0x2, 0x10, 0x11, 
-    0x5, 0x6, 0x4, 0x2, 0x11, 0x12, 0x7, 0x8, 0x2, 0x2, 0x12, 0x5, 0x3, 
-    0x2, 0x2, 0x2, 0x13, 0x14, 0x7, 0xa, 0x2, 0x2, 0x14, 0x15, 0x7, 0xb, 
-    0x2, 0x2, 0x15, 0x16, 0x7, 0x9, 0x2, 0x2, 0x16, 0x7, 0x3, 0x2, 0x2, 
-    0x2, 0x2, 
+    0x3, 0x10, 0x39, 0x4, 0x2, 0x9, 0x2, 0x4, 0x3, 0x9, 0x3, 0x4, 0x4, 0x9, 
+    0x4, 0x4, 0x5, 0x9, 0x5, 0x4, 0x6, 0x9, 0x6, 0x4, 0x7, 0x9, 0x7, 0x4, 
+    0x8, 0x9, 0x8, 0x3, 0x2, 0x3, 0x2, 0x3, 0x2, 0x3, 0x3, 0x3, 0x3, 0x3, 
+    0x3, 0x3, 0x3, 0x3, 0x3, 0x3, 0x3, 0x7, 0x3, 0x1a, 0xa, 0x3, 0xc, 0x3, 
+    0xe, 0x3, 0x1d, 0xb, 0x3, 0x3, 0x3, 0x3, 0x3, 0x3, 0x4, 0x3, 0x4, 0x3, 
+    0x4, 0x5, 0x4, 0x24, 0xa, 0x4, 0x3, 0x5, 0x3, 0x5, 0x3, 0x5, 0x3, 0x5, 
+    0x5, 0x5, 0x2a, 0xa, 0x5, 0x3, 0x5, 0x3, 0x5, 0x3, 0x6, 0x3, 0x6, 0x3, 
+    0x6, 0x3, 0x6, 0x3, 0x6, 0x3, 0x7, 0x3, 0x7, 0x3, 0x7, 0x3, 0x7, 0x3, 
+    0x8, 0x3, 0x8, 0x3, 0x8, 0x2, 0x2, 0x9, 0x2, 0x4, 0x6, 0x8, 0xa, 0xc, 
+    0xe, 0x2, 0x3, 0x3, 0x2, 0xc, 0xd, 0x2, 0x35, 0x2, 0x10, 0x3, 0x2, 0x2, 
+    0x2, 0x4, 0x13, 0x3, 0x2, 0x2, 0x2, 0x6, 0x23, 0x3, 0x2, 0x2, 0x2, 0x8, 
+    0x25, 0x3, 0x2, 0x2, 0x2, 0xa, 0x2d, 0x3, 0x2, 0x2, 0x2, 0xc, 0x32, 
+    0x3, 0x2, 0x2, 0x2, 0xe, 0x36, 0x3, 0x2, 0x2, 0x2, 0x10, 0x11, 0x5, 
+    0x4, 0x3, 0x2, 0x11, 0x12, 0x7, 0x2, 0x2, 0x3, 0x12, 0x3, 0x3, 0x2, 
+    0x2, 0x2, 0x13, 0x14, 0x7, 0x3, 0x2, 0x2, 0x14, 0x15, 0x7, 0x4, 0x2, 
+    0x2, 0x15, 0x16, 0x7, 0x5, 0x2, 0x2, 0x16, 0x17, 0x7, 0x6, 0x2, 0x2, 
+    0x17, 0x1b, 0x7, 0x7, 0x2, 0x2, 0x18, 0x1a, 0x5, 0x6, 0x4, 0x2, 0x19, 
+    0x18, 0x3, 0x2, 0x2, 0x2, 0x1a, 0x1d, 0x3, 0x2, 0x2, 0x2, 0x1b, 0x19, 
+    0x3, 0x2, 0x2, 0x2, 0x1b, 0x1c, 0x3, 0x2, 0x2, 0x2, 0x1c, 0x1e, 0x3, 
+    0x2, 0x2, 0x2, 0x1d, 0x1b, 0x3, 0x2, 0x2, 0x2, 0x1e, 0x1f, 0x7, 0x8, 
+    0x2, 0x2, 0x1f, 0x5, 0x3, 0x2, 0x2, 0x2, 0x20, 0x24, 0x5, 0x8, 0x5, 
+    0x2, 0x21, 0x24, 0x5, 0xa, 0x6, 0x2, 0x22, 0x24, 0x5, 0xc, 0x7, 0x2, 
+    0x23, 0x20, 0x3, 0x2, 0x2, 0x2, 0x23, 0x21, 0x3, 0x2, 0x2, 0x2, 0x23, 
+    0x22, 0x3, 0x2, 0x2, 0x2, 0x24, 0x7, 0x3, 0x2, 0x2, 0x2, 0x25, 0x26, 
+    0x7, 0x3, 0x2, 0x2, 0x26, 0x29, 0x7, 0xc, 0x2, 0x2, 0x27, 0x28, 0x7, 
+    0x9, 0x2, 0x2, 0x28, 0x2a, 0x5, 0xe, 0x8, 0x2, 0x29, 0x27, 0x3, 0x2, 
+    0x2, 0x2, 0x29, 0x2a, 0x3, 0x2, 0x2, 0x2, 0x2a, 0x2b, 0x3, 0x2, 0x2, 
+    0x2, 0x2b, 0x2c, 0x7, 0xa, 0x2, 0x2, 0x2c, 0x9, 0x3, 0x2, 0x2, 0x2, 
+    0x2d, 0x2e, 0x7, 0xc, 0x2, 0x2, 0x2e, 0x2f, 0x7, 0x9, 0x2, 0x2, 0x2f, 
+    0x30, 0x5, 0xe, 0x8, 0x2, 0x30, 0x31, 0x7, 0xa, 0x2, 0x2, 0x31, 0xb, 
+    0x3, 0x2, 0x2, 0x2, 0x32, 0x33, 0x7, 0xb, 0x2, 0x2, 0x33, 0x34, 0x5, 
+    0xe, 0x8, 0x2, 0x34, 0x35, 0x7, 0xa, 0x2, 0x2, 0x35, 0xd, 0x3, 0x2, 
+    0x2, 0x2, 0x36, 0x37, 0x9, 0x2, 0x2, 0x2, 0x37, 0xf, 0x3, 0x2, 0x2, 
+    0x2, 0x5, 0x1b, 0x23, 0x29, 
   };
 
   atn::ATNDeserializer deserializer;
