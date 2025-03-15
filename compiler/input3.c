@@ -1,7 +1,6 @@
 int main() {
     int x;
-    int y;
-    int z;
-    y=2;
-    return y;
+    x = (3 + 2) * 10 ;
+    return x;
 }
+ 
