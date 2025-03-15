@@ -3,6 +3,10 @@
 
 #include "antlr4-runtime.h"
 #include "generated/ifccBaseVisitor.h"
+#include <iostream>
+#include <map>
+#include <variant>
+#include <string>
 
 class  CodeGenVisitor : public ifccBaseVisitor {
 	public:
@@ -15,7 +19,7 @@ class  CodeGenVisitor : public ifccBaseVisitor {
         virtual antlrcpp::Any visitMult_expr(ifccParser::Mult_exprContext *ctx) override;
         virtual antlrcpp::Any visitPrimary_expr(ifccParser::Primary_exprContext *ctx) override;
 private:
-        std::map<std::string, int> symbolTable;
+        //using SymbolType = std::variant<int>;
+        std::map<std::string, std::pair<int,int>> symbolTable;
         int stackOffset = 0;
-
 };

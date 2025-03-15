@@ -22,7 +22,7 @@ antlrcpp::Any CodeGenVisitor::visitProg(ifccParser::ProgContext *ctx) {
 antlrcpp::Any CodeGenVisitor::visitDecl_stmt(ifccParser::Decl_stmtContext *ctx) {
     //std::cout << "we have one declaration" << std::endl;
     std::string varName = ctx->ID()->getText();
-    symbolTable[varName] = stackOffset; // Add variable to symbol table
+    symbolTable[varName].first = stackOffset; // Add variable to symbol table
     stackOffset+=4;
     //std::cout<<"show the var name : "<< varName <<"\n" ;
     std::cout << "    subq $4, %rsp\n"; // Allocate space on the stack
@@ -36,15 +36,16 @@ antlrcpp::Any CodeGenVisitor::visitAssign_stmt(ifccParser::Assign_stmtContext *c
     std::string varName = ctx->ID()->getText();
     // Visit the expression on the right-hand side of the assignment
     this->visit(ctx->expr());
-    
-    int varOffset = symbolTable[varName];
+    int valeur;
+    int varOffset = symbolTable[varName].first;
     if (ctx->expr()->CONST()){
-        std::string valeur = ctx->expr()->CONST()->getText();    
+        valeur = std::stoi(ctx->expr()->CONST()->getText());    
         std::cout << "    movl $"<< valeur <<", -"<< varOffset << "(%rbp)\n";
     } else if (ctx->expr()->exprc()){
-        int valeur = (int)this->visit(ctx->expr()->exprc());
+        valeur = (int)this->visit(ctx->expr()->exprc());
         std::cout << "    movl $"<< valeur <<", -"<< varOffset << "(%rbp)\n";
     }
+    symbolTable[varName].second = valeur;
     
 
     //variables.push(1);
@@ -69,7 +70,7 @@ antlrcpp::Any CodeGenVisitor::visitReturn_stmt(ifccParser::Return_stmtContext *c
         }
 
         // Get the variable's stack offset
-        int location = symbolTable[varName];
+        int location = symbolTable[varName].first;
 
         // Load the variable's value into %eax
         std::cout << "    movl -" << location << "(%rbp), %eax\n";
@@ -128,6 +129,8 @@ antlrcpp::Any CodeGenVisitor::visitPrimary_expr(ifccParser::Primary_exprContext 
     if (ctx->CONST()) {
         // Return the constant value
         return std::stoi(ctx->CONST()->getText());
+    } else if (ctx->ID()) {
+        return symbolTable[ctx->ID()->getText()].second;
     } else if (ctx->exprc()) {
         // Handle grouped expressions
         return this->visit(ctx->exprc());
