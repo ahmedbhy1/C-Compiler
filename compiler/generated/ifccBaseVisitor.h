@@ -43,6 +43,18 @@ public:
     return visitChildren(ctx);
   }
 
+  virtual antlrcpp::Any visitExprc(ifccParser::ExprcContext *ctx) override {
+    return visitChildren(ctx);
+  }
+
+  virtual antlrcpp::Any visitMult_expr(ifccParser::Mult_exprContext *ctx) override {
+    return visitChildren(ctx);
+  }
+
+  virtual antlrcpp::Any visitPrimary_expr(ifccParser::Primary_exprContext *ctx) override {
+    return visitChildren(ctx);
+  }
+
 
 };
 

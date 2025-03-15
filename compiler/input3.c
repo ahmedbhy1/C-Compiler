@@ -1,7 +1,8 @@
 int main() {
     int x;
     int y;
-    int z;
-    y=2;
+    x = (2 + 4) * 3 ;
+    y = 30 - x ;
     return y;
-}
+ }
+ 
