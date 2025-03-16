@@ -13,8 +13,8 @@ class  ifccParser : public antlr4::Parser {
 public:
   enum {
     T__0 = 1, T__1 = 2, T__2 = 3, T__3 = 4, T__4 = 5, T__5 = 6, T__6 = 7, 
-    T__7 = 8, T__8 = 9, OPA = 10, RETURN = 11, ID = 12, CONST = 13, COMMENT = 14, 
-    DIRECTIVE = 15, WS = 16, OPM = 17
+    T__7 = 8, T__8 = 9, RETURN = 10, ID = 11, CONST = 12, COMMENT = 13, 
+    DIRECTIVE = 14, WS = 15, OPA = 16, OPM = 17
   };
 
   enum {

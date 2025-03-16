@@ -1,24 +1,30 @@
 grammar ifcc;
-
 axiom : prog EOF ;
-
 prog : 'int' 'main' '(' ')' '{' stmt* '}' ;
-
 stmt : decl_stmt
      | assign_stmt
      | return_stmt
      ;
-
-
 decl_stmt : 'int' ID ('=' expr)? ';' ;
-
 assign_stmt : ID '=' expr ';' ;
-
 return_stmt : RETURN expr ';' ;
-
 expr : ID
      | CONST
+     | exprc
      ;
+exprc : mult_expr
+      | mult_expr OPA exprc
+      ;
+mult_expr : primary_expr
+          | primary_expr OPM mult_expr
+          ;
+primary_expr : CONST
+             | ID
+             | '(' exprc ')'
+             | OPA primary_expr   // Ajout de la négation unaire (-)
+             | '!' primary_expr   // Ajout du NOT logique
+             ;
+OPA : '+' | '-';   // Opérateurs arithmétiques
 
 RETURN : 'return' ;
 ID     : [a-zA-Z_][a-zA-Z_0-9]* ; // Match identifiers (e.g., variable names)

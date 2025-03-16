@@ -1,4 +1,4 @@
-build/ifccLexer.o: generated/ifccLexer.cpp generated/ifccLexer.h \
+build/ifccLexer.o: ifccLexer.cpp ifccLexer.h \
  /usr/include/antlr4-runtime/antlr4-runtime.h \
  /usr/include/antlr4-runtime/antlr4-common.h \
  /usr/include/antlr4-runtime/support/guid.h \

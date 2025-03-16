@@ -20,26 +20,59 @@ antlrcpp::Any CodeGenVisitor::visitProg(ifccParser::ProgContext *ctx) {
 }
 
 antlrcpp::Any CodeGenVisitor::visitDecl_stmt(ifccParser::Decl_stmtContext *ctx) {
+    //std::cout << "we have one declaration" << std::endl;
     std::string varName = ctx->ID()->getText();
-    symbolTable[varName] = stackOffset; // Add variable to symbol table
+    symbolTable[varName].first = stackOffset; // Add variable to symbol table
     stackOffset+=4;
     //std::cout<<"show the var name : "<< varName <<"\n" ;
     std::cout << "    subq $4, %rsp\n"; // Allocate space on the stack
+    
+    // If there's an initializer, process it
+    if (ctx->expr()) {
+        // Visit the expression on the right-hand side of the assignment
+        this->visit(ctx->expr());
+        int valeur;
+        if (ctx->expr()->CONST()){
+            valeur = std::stoi(ctx->expr()->CONST()->getText());    
+            std::cout << "    movl $"<< valeur <<", -"<< stackOffset << "(%rbp)\n";
+        } else if (ctx->expr()->exprc()){
+            valeur = (int)this->visit(ctx->expr()->exprc());
+            std::cout << "    movl $"<< valeur <<", -"<< stackOffset << "(%rbp)\n";
+        } else if (ctx->expr()->ID()) {
+            std::string rhsName = ctx->expr()->ID()->getText();
+            int rhsOffset = symbolTable[rhsName].first;
+            std::cout << "    movl -" << rhsOffset << "(%rbp), %eax\n";
+            std::cout << "    movl %eax, -" << stackOffset << "(%rbp)\n";
+            valeur = symbolTable[rhsName].second;
+        }
+        symbolTable[varName].second = valeur;
+    }
+    
     return 0;
 }
 
-
 antlrcpp::Any CodeGenVisitor::visitAssign_stmt(ifccParser::Assign_stmtContext *ctx) {
-    // Allocate 4 bytes on the stack for the variable
     std::string varName = ctx->ID()->getText();
+    int varOffset = symbolTable[varName].first;
+    int valeur;
+    
     // Visit the expression on the right-hand side of the assignment
-    this->visit(ctx->expr());
-    std::string valeur = ctx->expr()->CONST()->getText();
-    // Store the result in the variable (on the stack)
-    int varOffset = symbolTable[varName];
-    std::cout << "    movl $"<< valeur <<", -"<< varOffset << "(%rbp)\n";
-
-    //variables.push(1);
+    if (ctx->expr()->CONST()) {
+        valeur = std::stoi(ctx->expr()->CONST()->getText());    
+        std::cout << "    movl $"<< valeur <<", -"<< varOffset << "(%rbp)\n";
+    } else if (ctx->expr()->ID()) {
+        std::string rhsName = ctx->expr()->ID()->getText();
+        int rhsOffset = symbolTable[rhsName].first;
+        std::cout << "    movl -" << rhsOffset << "(%rbp), %eax\n";
+        std::cout << "    movl %eax, -" << varOffset << "(%rbp)\n";
+        valeur = symbolTable[rhsName].second;
+    } else if (ctx->expr()->exprc()) {
+        // Pour les expressions complexes (incluant les opérateurs unaires)
+        valeur = (int)this->visit(ctx->expr()->exprc());
+        std::cout << "    movl $"<< valeur <<", -"<< varOffset << "(%rbp)\n";
+    }
+    
+    symbolTable[varName].second = valeur;
     return 0;
 }
 
@@ -60,28 +93,88 @@ antlrcpp::Any CodeGenVisitor::visitReturn_stmt(ifccParser::Return_stmtContext *c
         }
 
         // Get the variable's stack offset
-        int location = symbolTable[varName];
+        int location = symbolTable[varName].first;
 
         // Load the variable's value into %eax
         std::cout << "    movl -" << location << "(%rbp), %eax\n";
     }
-    // Handle other cases (e.g., complex expressions)
-    else {
-        // Visit the expression to evaluate it (result will be in %eax)
-        this->visit(ctx->expr());
+    // Handle other cases (e.g., complex expressions including unary operators)
+    else if (ctx->expr()->exprc()) {
+        int value = (int)this->visit(ctx->expr()->exprc());
+        std::cout << "    movl $" << value << ", %eax\n";
     }
 
     return 0;
 }
 
 antlrcpp::Any CodeGenVisitor::visitExpr(ifccParser::ExprContext *ctx) {
-    if (ctx->CONST()) {
-        // If the expression is a constant, load it into %eax
-        int retval = std::stoi(ctx->CONST()->getText());
-        //std::cout << "    movl $" << retval << ", (%rsp)\n";
-    } else if (ctx->ID()) {
-    }
-
+    //std::cout << "we have one expression" << std::endl;
     return 0;
 }
 
+antlrcpp::Any CodeGenVisitor::visitExprc(ifccParser::ExprcContext *ctx) {
+    // Evaluate the first mult_expr
+    int left = this->visit(ctx->mult_expr());
+
+    // If there's an addition/subtraction, evaluate the second mult_expr
+    if (ctx->OPA()) {
+        int right = this->visit(ctx->exprc());
+        if (ctx->OPA()->getText() == "+") {
+            return left + right;
+        } else if (ctx->OPA()->getText() == "-") {
+            return left - right;
+        }
+    }
+
+    // If there's no addition/subtraction, return the result of the first mult_expr
+    return left;
+}
+
+antlrcpp::Any CodeGenVisitor::visitMult_expr(ifccParser::Mult_exprContext *ctx) {
+    // Evaluate the first primary_expr
+    int left = this->visit(ctx->primary_expr());
+
+    // If there's a multiplication/division, evaluate the second primary_expr
+    if (ctx->OPM()) {
+        int right = this->visit(ctx->mult_expr());
+        if (ctx->OPM()->getText() == "*") {
+            return left * right;
+        } else if (ctx->OPM()->getText() == "/") {
+            if (right == 0) {
+                throw std::runtime_error("Division by zero");
+            }
+            return left / right;
+        }
+    }
+
+    // If there's no multiplication/division, return the result of the first primary_expr
+    return left;
+}
+
+
+antlrcpp::Any CodeGenVisitor::visitPrimary_expr(ifccParser::Primary_exprContext *ctx) {
+    if (ctx->CONST()) {
+        // Si c'est une constante, retourner sa valeur
+        return std::stoi(ctx->CONST()->getText());
+    } else if (ctx->ID()) {
+        // Si c'est une variable, retourner sa valeur depuis la table des symboles
+        return symbolTable[ctx->ID()->getText()].second;
+    } else if (ctx->exprc()) {
+        // Si c'est une expression parenthésée, évaluer l'expression
+        return this->visit(ctx->exprc());
+    } else if (ctx->OPA()) {
+        // Si c'est une négation arithmétique (-)
+        int operand = this->visit(ctx->primary_expr());  // Visiter l'expression qui suit
+        if (ctx->OPA()->getText() == "-") {
+            return -operand;  // Appliquer la négation
+        } else {
+            // Pour le cas de '+', qui n'a aucun effet
+            return operand;
+        }
+    } else if (ctx->getText().substr(0, 1) == "!") {
+        // Si c'est une négation logique (!)
+        int operand = this->visit(ctx->primary_expr());  // Visiter l'expression qui suit
+        return operand == 0 ? 1 : 0;  // Si l'opérande est 0, retourner 1 (faux), sinon 0 (vrai)
+    }
+    return 0;  // Retour par défaut (en cas de problème)
+}
