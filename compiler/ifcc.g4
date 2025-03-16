@@ -9,15 +9,19 @@ stmt : decl_stmt
      | return_stmt
      ;
 
-
 decl_stmt : 'int' ID ('=' expr)? ';' ;
 
 assign_stmt : ID '=' expr ';' ;
 
 return_stmt : RETURN expr ';' ;
 
-expr : ID
-     | CONST
+// ADDED: Expression rules with bitwise operations
+expr : expr '&' expr    # BitwiseAndExpr  // ADDED: Bitwise AND
+     | expr '|' expr    # BitwiseOrExpr   // ADDED: Bitwise OR
+     | expr '^' expr    # BitwiseXorExpr  // ADDED: Bitwise XOR
+     | '(' expr ')'     # ParenthesizedExpr
+     | ID              # IdentifierExpr
+     | CONST           # ConstantExpr
      ;
 
 RETURN : 'return' ;

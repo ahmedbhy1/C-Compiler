@@ -1,0 +1,56 @@
+2025-03-16 02:46:00:851 grammar LogManager.java:25 before: (COMBINED_GRAMMAR ifcc (RULES (RULE axiom (BLOCK (ALT prog EOF))) (RULE prog (BLOCK (ALT 'int' 'main' '(' ')' '{' (* (BLOCK (ALT stmt))) '}'))) (RULE stmt (BLOCK (ALT decl_stmt) (ALT assign_stmt) (ALT return_stmt))) (RULE decl_stmt (BLOCK (ALT 'int' ID (? (BLOCK (ALT '=' expr))) ';'))) (RULE assign_stmt (BLOCK (ALT ID '=' expr ';'))) (RULE return_stmt (BLOCK (ALT RETURN expr ';'))) (RULE expr (BLOCK (ALT expr '&' expr) (ALT expr '|' expr) (ALT expr '^' expr) (ALT '(' expr ')') (ALT ID) (ALT CONST))) (RULE RETURN (BLOCK (ALT 'return'))) (RULE ID (BLOCK (ALT [a-zA-Z_] (* (BLOCK (ALT [a-zA-Z_0-9])))))) (RULE CONST (BLOCK (ALT (+ (BLOCK (ALT [0-9])))))) (RULE COMMENT (BLOCK (LEXER_ALT_ACTION (ALT '/*' (* (BLOCK (ALT .))) '*/') skip))) (RULE DIRECTIVE (BLOCK (LEXER_ALT_ACTION (ALT '#' (* (BLOCK (ALT .))) '\n') skip))) (RULE WS (BLOCK (LEXER_ALT_ACTION (ALT (+ (BLOCK (ALT [ \t\r\n])))) (LEXER_ACTION_CALL channel HIDDEN))))))
+2025-03-16 02:46:00:867 grammar LogManager.java:25 after: (COMBINED_GRAMMAR ifcc (RULES (RULE axiom (BLOCK (ALT prog EOF))) (RULE prog (BLOCK (ALT 'int' 'main' '(' ')' '{' (* (BLOCK (ALT stmt))) '}'))) (RULE stmt (BLOCK (ALT decl_stmt) (ALT assign_stmt) (ALT return_stmt))) (RULE decl_stmt (BLOCK (ALT 'int' ID (? (BLOCK (ALT '=' expr))) ';'))) (RULE assign_stmt (BLOCK (ALT ID '=' expr ';'))) (RULE return_stmt (BLOCK (ALT RETURN expr ';'))) (RULE expr (BLOCK (ALT expr '&' expr) (ALT expr '|' expr) (ALT expr '^' expr) (ALT '(' expr ')') (ALT ID) (ALT CONST))) (RULE RETURN (BLOCK (ALT 'return'))) (RULE ID (BLOCK (ALT [a-zA-Z_] (* (BLOCK (ALT [a-zA-Z_0-9])))))) (RULE CONST (BLOCK (ALT (+ (BLOCK (ALT [0-9])))))) (RULE COMMENT (BLOCK (LEXER_ALT_ACTION (ALT '/*' (* (BLOCK (ALT .))) '*/') skip))) (RULE DIRECTIVE (BLOCK (LEXER_ALT_ACTION (ALT '#' (* (BLOCK (ALT .))) '\n') skip))) (RULE WS (BLOCK (LEXER_ALT_ACTION (ALT (+ (BLOCK (ALT [ \t\r\n])))) (LEXER_ACTION_CALL channel HIDDEN))))))
+2025-03-16 02:46:00:883 grammar LogManager.java:25 after extract implicit lexer =(COMBINED_GRAMMAR ifcc (RULES (RULE axiom (BLOCK (ALT prog EOF))) (RULE prog (BLOCK (ALT 'int' 'main' '(' ')' '{' (* (BLOCK (ALT stmt))) '}'))) (RULE stmt (BLOCK (ALT decl_stmt) (ALT assign_stmt) (ALT return_stmt))) (RULE decl_stmt (BLOCK (ALT 'int' ID (? (BLOCK (ALT '=' expr))) ';'))) (RULE assign_stmt (BLOCK (ALT ID '=' expr ';'))) (RULE return_stmt (BLOCK (ALT RETURN expr ';'))) (RULE expr (BLOCK (ALT expr '&' expr) (ALT expr '|' expr) (ALT expr '^' expr) (ALT '(' expr ')') (ALT ID) (ALT CONST)))))
+2025-03-16 02:46:00:883 grammar LogManager.java:25 lexer =(LEXER_GRAMMAR ifccLexer (RULES (RULE T__0 (BLOCK (ALT 'int'))) (RULE T__1 (BLOCK (ALT 'main'))) (RULE T__2 (BLOCK (ALT '('))) (RULE T__3 (BLOCK (ALT ')'))) (RULE T__4 (BLOCK (ALT '{'))) (RULE T__5 (BLOCK (ALT '}'))) (RULE T__6 (BLOCK (ALT '='))) (RULE T__7 (BLOCK (ALT ';'))) (RULE T__8 (BLOCK (ALT '&'))) (RULE T__9 (BLOCK (ALT '|'))) (RULE T__10 (BLOCK (ALT '^'))) (RULE RETURN (BLOCK (ALT 'return'))) (RULE ID (BLOCK (ALT [a-zA-Z_] (* (BLOCK (ALT [a-zA-Z_0-9])))))) (RULE CONST (BLOCK (ALT (+ (BLOCK (ALT [0-9])))))) (RULE COMMENT (BLOCK (LEXER_ALT_ACTION (ALT '/*' (* (BLOCK (ALT .))) '*/') skip))) (RULE DIRECTIVE (BLOCK (LEXER_ALT_ACTION (ALT '#' (* (BLOCK (ALT .))) '\n') skip))) (RULE WS (BLOCK (LEXER_ALT_ACTION (ALT (+ (BLOCK (ALT [ \t\r\n])))) (LEXER_ACTION_CALL channel HIDDEN))))))
+2025-03-16 02:46:01:089 left-recursion LogManager.java:25 expr
+    :   ( {} '('<tokenIndex=145> expr<tokenIndex=147> ')'<tokenIndex=149>      
+        | ID<tokenIndex=157>               
+        | CONST<tokenIndex=165>            
+        )
+        (
+          {precpred(_ctx, 6)}?<p=6> '&'<tokenIndex=105> expr<tokenIndex=107,p=7>
+                  | {precpred(_ctx, 5)}?<p=5> '|'<tokenIndex=119> expr<tokenIndex=121,p=6>
+                  | {precpred(_ctx, 4)}?<p=4> '^'<tokenIndex=133> expr<tokenIndex=135,p=5>
+        )*
+    ;
+2025-03-16 02:46:01:105 grammar LogManager.java:25 added: (RULE expr (BLOCK (ALT (BLOCK (ALT {} ('(' (ELEMENT_OPTIONS (= tokenIndex 145))) (expr (ELEMENT_OPTIONS (= tokenIndex 147))) (')' (ELEMENT_OPTIONS (= tokenIndex 149)))) (ALT (ID (ELEMENT_OPTIONS (= tokenIndex 157)))) (ALT (CONST (ELEMENT_OPTIONS (= tokenIndex 165))))) (* (BLOCK (ALT ({precpred(_ctx, 6)}? (ELEMENT_OPTIONS (= p 6))) ('&' (ELEMENT_OPTIONS (= tokenIndex 105))) (expr (ELEMENT_OPTIONS (= tokenIndex 107) (= p 7)))) (ALT ({precpred(_ctx, 5)}? (ELEMENT_OPTIONS (= p 5))) ('|' (ELEMENT_OPTIONS (= tokenIndex 119))) (expr (ELEMENT_OPTIONS (= tokenIndex 121) (= p 6)))) (ALT ({precpred(_ctx, 4)}? (ELEMENT_OPTIONS (= p 4))) ('^' (ELEMENT_OPTIONS (= tokenIndex 133))) (expr (ELEMENT_OPTIONS (= tokenIndex 135) (= p 5)))))))))
+2025-03-16 02:46:01:105 semantics LogManager.java:25 tokens={EOF=-1, T__0=1, T__1=2, T__2=3, T__3=4, T__4=5, T__5=6, T__6=7, T__7=8, T__8=9, T__9=10, T__10=11, RETURN=12, ID=13, CONST=14, COMMENT=15, DIRECTIVE=16, WS=17}
+2025-03-16 02:46:01:105 semantics LogManager.java:25 strings={'int'=1, 'main'=2, '('=3, ')'=4, '{'=5, '}'=6, '='=7, ';'=8, '&'=9, '|'=10, '^'=11, 'return'=12}
+2025-03-16 02:46:01:121 LL1 LogManager.java:25 
+DECISION 0 in rule prog
+2025-03-16 02:46:01:121 LL1 LogManager.java:25 look=[{1, 12..13}, 6]
+2025-03-16 02:46:01:121 LL1 LogManager.java:25 LL(1)? true
+2025-03-16 02:46:01:121 LL1 LogManager.java:25 
+DECISION 1 in rule stmt
+2025-03-16 02:46:01:121 LL1 LogManager.java:25 look=[1, 13, 12]
+2025-03-16 02:46:01:121 LL1 LogManager.java:25 LL(1)? true
+2025-03-16 02:46:01:121 LL1 LogManager.java:25 
+DECISION 2 in rule decl_stmt
+2025-03-16 02:46:01:121 LL1 LogManager.java:25 look=[7, 8]
+2025-03-16 02:46:01:121 LL1 LogManager.java:25 LL(1)? true
+2025-03-16 02:46:01:121 LL1 LogManager.java:25 
+DECISION 3 in rule expr
+2025-03-16 02:46:01:121 LL1 LogManager.java:25 look=[3, 13, 14]
+2025-03-16 02:46:01:121 LL1 LogManager.java:25 LL(1)? true
+2025-03-16 02:46:01:121 LL1 LogManager.java:25 
+DECISION 4 in rule expr
+2025-03-16 02:46:01:121 LL1 LogManager.java:25 look=[null, null, null]
+2025-03-16 02:46:01:121 LL1 LogManager.java:25 LL(1)? false
+2025-03-16 02:46:01:121 LL1 LogManager.java:25 
+DECISION 5 in rule expr
+2025-03-16 02:46:01:121 LL1 LogManager.java:25 look=[null, null]
+2025-03-16 02:46:01:121 LL1 LogManager.java:25 LL(1)? false
+2025-03-16 02:46:01:136 action-translator LogManager.java:25 translate 
+2025-03-16 02:46:01:136 action-translator LogManager.java:25 translate precpred(_ctx, 6)
+2025-03-16 02:46:01:136 action-translator LogManager.java:25 translate precpred(_ctx, 5)
+2025-03-16 02:46:01:136 action-translator LogManager.java:25 translate precpred(_ctx, 4)
+2025-03-16 02:46:01:136 action-translator LogManager.java:25 translate precpred(_ctx, 6)
+2025-03-16 02:46:01:136 action-translator LogManager.java:25 translate precpred(_ctx, 5)
+2025-03-16 02:46:01:136 action-translator LogManager.java:25 translate precpred(_ctx, 4)
+2025-03-16 02:46:01:152 action-translator LogManager.java:25 translate 
+2025-03-16 02:46:01:152 action-translator LogManager.java:25 translate precpred(_ctx, 6)
+2025-03-16 02:46:01:152 action-translator LogManager.java:25 translate precpred(_ctx, 5)
+2025-03-16 02:46:01:152 action-translator LogManager.java:25 translate precpred(_ctx, 4)
+2025-03-16 02:46:01:152 action-translator LogManager.java:25 translate precpred(_ctx, 6)
+2025-03-16 02:46:01:152 action-translator LogManager.java:25 translate precpred(_ctx, 5)
+2025-03-16 02:46:01:152 action-translator LogManager.java:25 translate precpred(_ctx, 4)

@@ -1,5 +1,5 @@
 
-// Generated from ifcc.g4 by ANTLR 4.7.2
+// Generated from ifcc.g4 by ANTLR 4.13.2
 
 #pragma once
 
@@ -15,31 +15,51 @@
 class  ifccBaseVisitor : public ifccVisitor {
 public:
 
-  virtual antlrcpp::Any visitAxiom(ifccParser::AxiomContext *ctx) override {
+  virtual std::any visitAxiom(ifccParser::AxiomContext *ctx) override {
     return visitChildren(ctx);
   }
 
-  virtual antlrcpp::Any visitProg(ifccParser::ProgContext *ctx) override {
+  virtual std::any visitProg(ifccParser::ProgContext *ctx) override {
     return visitChildren(ctx);
   }
 
-  virtual antlrcpp::Any visitStmt(ifccParser::StmtContext *ctx) override {
+  virtual std::any visitStmt(ifccParser::StmtContext *ctx) override {
     return visitChildren(ctx);
   }
 
-  virtual antlrcpp::Any visitDecl_stmt(ifccParser::Decl_stmtContext *ctx) override {
+  virtual std::any visitDecl_stmt(ifccParser::Decl_stmtContext *ctx) override {
     return visitChildren(ctx);
   }
 
-  virtual antlrcpp::Any visitAssign_stmt(ifccParser::Assign_stmtContext *ctx) override {
+  virtual std::any visitAssign_stmt(ifccParser::Assign_stmtContext *ctx) override {
     return visitChildren(ctx);
   }
 
-  virtual antlrcpp::Any visitReturn_stmt(ifccParser::Return_stmtContext *ctx) override {
+  virtual std::any visitReturn_stmt(ifccParser::Return_stmtContext *ctx) override {
     return visitChildren(ctx);
   }
 
-  virtual antlrcpp::Any visitExpr(ifccParser::ExprContext *ctx) override {
+  virtual std::any visitBitwiseAndExpr(ifccParser::BitwiseAndExprContext *ctx) override {
+    return visitChildren(ctx);
+  }
+
+  virtual std::any visitBitwiseOrExpr(ifccParser::BitwiseOrExprContext *ctx) override {
+    return visitChildren(ctx);
+  }
+
+  virtual std::any visitIdentifierExpr(ifccParser::IdentifierExprContext *ctx) override {
+    return visitChildren(ctx);
+  }
+
+  virtual std::any visitConstantExpr(ifccParser::ConstantExprContext *ctx) override {
+    return visitChildren(ctx);
+  }
+
+  virtual std::any visitParenthesizedExpr(ifccParser::ParenthesizedExprContext *ctx) override {
+    return visitChildren(ctx);
+  }
+
+  virtual std::any visitBitwiseXorExpr(ifccParser::BitwiseXorExprContext *ctx) override {
     return visitChildren(ctx);
   }
 

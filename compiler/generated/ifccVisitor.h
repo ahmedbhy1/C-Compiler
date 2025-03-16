@@ -1,5 +1,5 @@
 
-// Generated from ifcc.g4 by ANTLR 4.7.2
+// Generated from ifcc.g4 by ANTLR 4.13.2
 
 #pragma once
 
@@ -19,19 +19,29 @@ public:
   /**
    * Visit parse trees produced by ifccParser.
    */
-    virtual antlrcpp::Any visitAxiom(ifccParser::AxiomContext *context) = 0;
+    virtual std::any visitAxiom(ifccParser::AxiomContext *context) = 0;
 
-    virtual antlrcpp::Any visitProg(ifccParser::ProgContext *context) = 0;
+    virtual std::any visitProg(ifccParser::ProgContext *context) = 0;
 
-    virtual antlrcpp::Any visitStmt(ifccParser::StmtContext *context) = 0;
+    virtual std::any visitStmt(ifccParser::StmtContext *context) = 0;
 
-    virtual antlrcpp::Any visitDecl_stmt(ifccParser::Decl_stmtContext *context) = 0;
+    virtual std::any visitDecl_stmt(ifccParser::Decl_stmtContext *context) = 0;
 
-    virtual antlrcpp::Any visitAssign_stmt(ifccParser::Assign_stmtContext *context) = 0;
+    virtual std::any visitAssign_stmt(ifccParser::Assign_stmtContext *context) = 0;
 
-    virtual antlrcpp::Any visitReturn_stmt(ifccParser::Return_stmtContext *context) = 0;
+    virtual std::any visitReturn_stmt(ifccParser::Return_stmtContext *context) = 0;
 
-    virtual antlrcpp::Any visitExpr(ifccParser::ExprContext *context) = 0;
+    virtual std::any visitBitwiseAndExpr(ifccParser::BitwiseAndExprContext *context) = 0;
+
+    virtual std::any visitBitwiseOrExpr(ifccParser::BitwiseOrExprContext *context) = 0;
+
+    virtual std::any visitIdentifierExpr(ifccParser::IdentifierExprContext *context) = 0;
+
+    virtual std::any visitConstantExpr(ifccParser::ConstantExprContext *context) = 0;
+
+    virtual std::any visitParenthesizedExpr(ifccParser::ParenthesizedExprContext *context) = 0;
+
+    virtual std::any visitBitwiseXorExpr(ifccParser::BitwiseXorExprContext *context) = 0;
 
 
 };
