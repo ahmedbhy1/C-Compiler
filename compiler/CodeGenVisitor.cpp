@@ -51,23 +51,14 @@ antlrcpp::Any CodeGenVisitor::visitAssign_stmt(ifccParser::Assign_stmtContext *c
     } else if (ctx->expr()->exprc()){
         valeur = (int)this->visit(ctx->expr()->exprc());
         std::cout << "    movl $"<< valeur <<", -"<< varOffset << "(%rbp)\n";
+        symbolTable[varName].second = valeur;
+    } else {
+        this->visit(ctx->expr());
+        std::cout << "    movl %eax, -" << varOffset << "(%rbp)\n";
     }
-    symbolTable[varName].second = valeur;
-    
-
-    if (symbolTable.find(varName) == symbolTable.end()) {
-        throw std::runtime_error("Variable '" + varName + "' not declared");
-    }
-
-
-    // Evaluate the expression into %eax
-    this->visit(ctx->expr());
-
-    // Store result into the variable's location
-    std::cout << "    movl %eax, -" << varOffset << "(%rbp)\n";
-
     return 0;
-}
+
+    }
 
 antlrcpp::Any CodeGenVisitor::visitReturn_stmt(ifccParser::Return_stmtContext *ctx) {
     //std::cout << "we have one return" << std::endl;
