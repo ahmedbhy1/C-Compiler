@@ -9,17 +9,18 @@ stmt : decl_stmt
      | return_stmt
      ;
 
-
 decl_stmt : 'int' ID ('=' expr)? ';' ;
 
 assign_stmt : ID '=' expr ';' ;
 
 return_stmt : RETURN expr ';' ;
 
-expr : ID
-     | CONST
-     | exprc
-     ;
+expr
+    : expr op=('==' | '!=' | '>' | '<' | '>=' | '<=') expr
+    | ID
+    | CONST
+    | exprc
+    ;
 
 exprc : mult_expr
       | mult_expr OPA exprc
