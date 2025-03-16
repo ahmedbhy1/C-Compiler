@@ -37,37 +37,35 @@ antlrcpp::Any CodeGenVisitor::visitDecl_stmt(ifccParser::Decl_stmtContext *ctx) 
     return 0;
 }
 
-antlrcpp::Any CodeGenVisitor::visitAssign_stmt(ifccParser::Assign_stmtContext *ctx) {
-    // Allocate 4 bytes on the stack for the variable
-    //std::cout << "we have one assignment" << std::endl;
-    std::string varName = ctx->ID()->getText();
-    // Visit the expression on the right-hand side of the assignment
-    this->visit(ctx->expr());
-    int valeur;
-    int varOffset = symbolTable[varName].first;
-    if (ctx->expr()->CONST()){
-        valeur = std::stoi(ctx->expr()->CONST()->getText());    
-        std::cout << "    movl $"<< valeur <<", -"<< varOffset << "(%rbp)\n";
-    } else if (ctx->expr()->exprc()){
-        valeur = (int)this->visit(ctx->expr()->exprc());
-        std::cout << "    movl $"<< valeur <<", -"<< varOffset << "(%rbp)\n";
-    }
-    symbolTable[varName].second = valeur;
-    
 
+
+antlrcpp::Any CodeGenVisitor::visitAssign_stmt(ifccParser::Assign_stmtContext *ctx) {
+    std::string varName = ctx->ID()->getText();
+
+    // Ensure variable exists
     if (symbolTable.find(varName) == symbolTable.end()) {
         throw std::runtime_error("Variable '" + varName + "' not declared");
     }
 
+    int varOffset = symbolTable[varName].first;
 
-    // Evaluate the expression into %eax
-    this->visit(ctx->expr());
-
-    // Store result into the variable's location
-    std::cout << "    movl %eax, -" << varOffset << "(%rbp)\n";
+    if (ctx->expr()->CONST()) {
+        int valeur = std::stoi(ctx->expr()->CONST()->getText());
+        std::cout << "    movl $" << valeur << ", -" << varOffset << "(%rbp)\n";
+        symbolTable[varName].second = valeur;
+    } else if (ctx->expr()->exprc()) {
+        int valeur = (int)this->visit(ctx->expr()->exprc()); // Compute the value for internal tracking
+        std::cout << "    movl $" << valeur << ", -" << varOffset << "(%rbp)\n";
+        symbolTable[varName].second = valeur;
+    } else {
+        // Generate the code for the expression and store in %eax
+        this->visit(ctx->expr());
+        std::cout << "    movl %eax, -" << varOffset << "(%rbp)\n";
+    }
 
     return 0;
 }
+
 
 antlrcpp::Any CodeGenVisitor::visitReturn_stmt(ifccParser::Return_stmtContext *ctx) {
     //std::cout << "we have one return" << std::endl;
