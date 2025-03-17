@@ -33,6 +33,12 @@ public:
 
     virtual antlrcpp::Any visitExpr(ifccParser::ExprContext *context) = 0;
 
+    virtual antlrcpp::Any visitExprc(ifccParser::ExprcContext *context) = 0;
+
+    virtual antlrcpp::Any visitMult_expr(ifccParser::Mult_exprContext *context) = 0;
+
+    virtual antlrcpp::Any visitPrimary_expr(ifccParser::Primary_exprContext *context) = 0;
+
 
 };
 
