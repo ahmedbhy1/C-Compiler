@@ -15,8 +15,10 @@ assign_stmt : ID '=' expr ';' ;
 
 return_stmt : RETURN expr ';' ;
 
+
 expr
-    : expr op=('==' | '!=' | '>' | '<' | '>=' | '<=') expr
+    : expr op = ('==' | '!=' | '>' | '<' | '>=' | '<=') expr
+    | expr opbitwise = ('&' | '|' | '^') expr
     | ID
     | CONST
     | exprc
