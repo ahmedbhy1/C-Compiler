@@ -7,6 +7,6 @@ int main() {
     result = a != b;
     result = a > b;
     result = a < b;
-    //test direct push
+    //test direct push 2
     return result;
 }
