@@ -9,6 +9,7 @@ antlrcpp::Any CodeGenVisitor::visitProg(ifccParser::ProgContext *ctx) {
 
     // Visit all statements in the program
     for (auto stmt : ctx->stmt()) {
+        //std::cout << "we are getting from visitProg"<< stmt->getText() << std::endl;
         this->visit(stmt);
     }
 
@@ -54,9 +55,13 @@ antlrcpp::Any CodeGenVisitor::visitAssign_stmt(ifccParser::Assign_stmtContext *c
         std::cout << "    movl $" << valeur << ", -" << varOffset << "(%rbp)\n";
         symbolTable[varName].second = valeur;
     } else if (ctx->expr()->exprc()) {
-        int valeur = (int)this->visit(ctx->expr()->exprc()); // Compute the value for internal tracking
-        std::cout << "    movl $" << valeur << ", -" << varOffset << "(%rbp)\n";
-        symbolTable[varName].second = valeur;
+        this->visit(ctx->expr()->exprc());
+        std::cout << "    movl %eax, -" << varOffset << "(%rbp)\n";
+        /*
+            int valeur = (int)this->visit(ctx->expr()->exprc()); // Compute the value for internal tracking
+            std::cout << "    movl $" << valeur << ", -" << varOffset << "(%rbp)\n";
+            symbolTable[varName].second = valeur;
+        */
     } else {
         // Generate the code for the expression and store in %eax
         this->visit(ctx->expr());
@@ -162,7 +167,7 @@ antlrcpp::Any CodeGenVisitor::visitExpr(ifccParser::ExprContext *ctx) {
     //std::cout << "we have one expression" << std::endl;
     return 0;
 }
-
+/*
 antlrcpp::Any CodeGenVisitor::visitExprc(ifccParser::ExprcContext *ctx) {
     // Evaluate the first mult_expr
     int left = this->visit(ctx->mult_expr());
@@ -180,7 +185,84 @@ antlrcpp::Any CodeGenVisitor::visitExprc(ifccParser::ExprcContext *ctx) {
     // If there's no addition/subtraction, return the result of the first mult_expr
     return left;
 }
+*/
+antlrcpp::Any CodeGenVisitor::visitExprc(ifccParser::ExprcContext *ctx) {
+    // Visit the left mult_expr and compute its value in %eax
+    this->visit(ctx->mult_expr());
 
+    // If there's an addition/subtraction, handle it
+    if (ctx->OPA()) {
+        // Save the left result to a temporary variable on the stack
+        std::string temp = newTemp();
+        symbolTable[temp].first = stackOffset; // Add variable to symbol table
+        std::cout << "    movl %eax, -" << stackOffset << "(%rbp)" << std::endl;
+        stackOffset+=4;
+        // Visit the right exprc and compute its value in %eax
+        this->visit(ctx->exprc());
+
+        // Perform the operation
+        if (ctx->OPA()->getText() == "+") {
+            int varStackOffset = symbolTable[temp].first;
+            std::cout << "    addl -" << varStackOffset << "(%rbp), %eax" << std::endl;
+        } else if (ctx->OPA()->getText() == "-") {            
+            int varStackOffset = symbolTable[temp].first;
+            std::cout << "    subl -" << varStackOffset << "(%rbp), %eax" << std::endl;
+        }
+    }
+
+    return nullptr;
+}
+
+antlrcpp::Any CodeGenVisitor::visitMult_expr(ifccParser::Mult_exprContext *ctx) {
+    // Visit the left primary_expr and compute its value in %eax
+    this->visit(ctx->primary_expr());
+
+    // If there's a multiplication/division, handle it
+    if (ctx->OPM()) {
+        // Save the left result to a temporary variable on the stack
+        std::string temp = newTemp();
+        symbolTable[temp].first = stackOffset; // Add variable to symbol table
+        std::cout << "    movl %eax, -" << stackOffset << "(%rbp)" << std::endl;
+        stackOffset+=4;
+        
+        // Visit the right mult_expr and compute its value in %eax
+        this->visit(ctx->mult_expr());
+
+        // Perform the operation
+        if (ctx->OPM()->getText() == "*") {
+            int varStackOffset = symbolTable[temp].first;
+            std::cout <<"    imull -" << varStackOffset << "(%rbp), %eax"<<std::endl; // %eax = %eax * temp
+        } else if (ctx->OPM()->getText() == "/") {
+            
+            int varStackOffset = symbolTable[temp].first;
+            std::cout <<"    movl -" << varStackOffset << "(%rbp), %ecx"<<std::endl;
+            std::cout <<"    cltd" <<std::endl;                        // Sign-extend %eax into %edx:%eax
+            std::cout <<"    idivl %ecx"<<std::endl;                   // %eax = %eax / %ecx
+        }
+    }
+
+    // The result is already in %eax
+    return nullptr;
+}
+
+antlrcpp::Any CodeGenVisitor::visitPrimary_expr(ifccParser::Primary_exprContext *ctx) {
+    if (ctx->CONST()) {
+        // Load the constant into %eax
+        std::cout <<"    movl $" << ctx->CONST()->getText() << ", %eax" << std::endl;
+    } else if (ctx->ID()) {
+        // Load the variable's value into %eax
+        int variableSymbol = symbolTable[ctx->ID()->getText()].first;
+        std::cout<<"    movl -" << variableSymbol << "(%rbp), %eax"<<std::endl;
+
+    } else if (ctx->exprc()) {
+        // Handle grouped expressions
+        this->visit(ctx->exprc());
+    }
+
+    // The result is already in %eax
+    return nullptr;
+}
+/*
 antlrcpp::Any CodeGenVisitor::visitMult_expr(ifccParser::Mult_exprContext *ctx) {
     // Evaluate the first primary_expr
     int left = this->visit(ctx->primary_expr());
@@ -198,7 +280,8 @@ antlrcpp::Any CodeGenVisitor::visitMult_expr(ifccParser::Mult_exprContext *ctx) 
     // If there's no multiplication/division, return the result of the first primary_expr
     return left;
 }
-
+*/
+/*
 antlrcpp::Any CodeGenVisitor::visitPrimary_expr(ifccParser::Primary_exprContext *ctx) {
     if (ctx->CONST()) {
         // Return the constant value
@@ -211,3 +294,4 @@ antlrcpp::Any CodeGenVisitor::visitPrimary_expr(ifccParser::Primary_exprContext 
     }
     return 0;
 }
+*/

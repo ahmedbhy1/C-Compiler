@@ -1,7 +1,7 @@
 int main() {
    int x;
    int y;
-   x = 2 + 4 * 3 ;
-   y = 20 - x ;
-   return y;
+   x = 14 + 11 * 12 ;
+   y = x - 2;
+   return x;
 }

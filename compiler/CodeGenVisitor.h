@@ -22,4 +22,9 @@ private:
         //using SymbolType = std::variant<int>;
         std::map<std::string, std::pair<int,int>> symbolTable;
         int stackOffset = 0;
+        int tempCounter = 0; // Counter for generating unique temporary variable names
+        // Generate a unique temporary variable name
+        std::string newTemp() {
+            return "temp_" + std::to_string(tempCounter++);
+        }
 };
