@@ -90,11 +90,11 @@ antlrcpp::Any CodeGenVisitor::visitReturn_stmt(ifccParser::Return_stmtContext *c
             // Extract the character and convert it to its ASCII value
             char charVal = constantText[1];  // Skip the single quotes
             int retval = static_cast<int>(charVal);
-            std::cout << "    movl $" << retval << ", %eax // Character: '" << charVal << "'\n";
+            std::cout << "    movl $" << retval << ", %eax\n";
         } else {
             // Otherwise, it's a numeric constant
             int retval = std::stoi(constantText);
-            std::cout << "    movl $" << retval << ", %eax // Numeric constant\n";
+            std::cout << "    movl $" << retval << ", %eax\n";
         }
     }
     // Check if the expression is a variable
