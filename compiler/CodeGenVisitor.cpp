@@ -23,16 +23,28 @@ antlrcpp::Any CodeGenVisitor::visitDecl_stmt(ifccParser::Decl_stmtContext *ctx) 
     //std::cout << "we have one declaration" << std::endl;
     std::string varName = ctx->ID()->getText();
     symbolTable[varName].first = stackOffset; // Add variable to symbol table
-    stackOffset+=4;
+    
     //std::cout<<"show the var name : "<< varName <<"\n" ;
     std::cout << "    subq $4, %rsp\n"; // Allocate space on the stack
 
     // Handle optional initialization
     if (ctx->expr()) {
-        this->visit(ctx->expr());
-        int varOffset = symbolTable[varName].first;
-        std::cout << "    movl %eax, -" << varOffset << "(%rbp)\n";
+        std::string constantText = ctx->expr()->getText();
+    //std::cout << "Assignment statement: " << ctx->expr() << std::endl;
+        int value;
+
+        // Check if it's a character constant
+        if (constantText.front() == '\'' && constantText.back() == '\'' && constantText.size() == 3) {
+            value = static_cast<int>(constantText[1]);  // Extract ASCII value of character
+            std::cout << "    movl $" << value << ", -" << stackOffset << "(%rbp) \n";
+        } 
+        // Otherwise, assume it's a number
+        else {
+            value = std::stoi(constantText);
+            std::cout << "    movl $" << value << ", -" << stackOffset << "(%rbp) \n";
+        }
     }
+    stackOffset+=4;
 
     return 0;
 }
@@ -71,9 +83,19 @@ antlrcpp::Any CodeGenVisitor::visitReturn_stmt(ifccParser::Return_stmtContext *c
     //std::cout << "we have one return" << std::endl;
     // Check if the expression is a constant
     if (ctx->expr()->CONST()) {
-        // If the expression is a constant, load it into %eax
-        int retval = std::stoi(ctx->expr()->CONST()->getText());
-        std::cout << "    movl $" << retval << ", %eax\n";
+        std::string constantText = ctx->expr()->CONST()->getText();
+        
+        // Check if the constant is a character (e.g., 'A')
+        if (constantText.front() == '\'' && constantText.back() == '\'') {
+            // Extract the character and convert it to its ASCII value
+            char charVal = constantText[1];  // Skip the single quotes
+            int retval = static_cast<int>(charVal);
+            std::cout << "    movl $" << retval << ", %eax // Character: '" << charVal << "'\n";
+        } else {
+            // Otherwise, it's a numeric constant
+            int retval = std::stoi(constantText);
+            std::cout << "    movl $" << retval << ", %eax // Numeric constant\n";
+        }
     }
     // Check if the expression is a variable
     else if (ctx->expr()->ID()) {
@@ -117,11 +139,9 @@ antlrcpp::Any CodeGenVisitor::visitExpr(ifccParser::ExprContext *ctx) {
     }
     else if (ctx->op) {
         std::string op = ctx->op->getText();
-
         // Evaluate left operand
         this->visit(ctx->expr(0));
         std::cout << "    pushq %rax\n";
-
         // Evaluate right operand
         this->visit(ctx->expr(1));
         std::cout << "    movl %eax, %ebx\n"; // Right operand in ebx
