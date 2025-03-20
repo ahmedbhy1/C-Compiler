@@ -74,6 +74,7 @@ antlrcpp::Any CodeGenVisitor::visitAssign_stmt(ifccParser::Assign_stmtContext *c
 
 antlrcpp::Any CodeGenVisitor::visitReturn_stmt(ifccParser::Return_stmtContext *ctx) {
     //std::cout << "we have one return" << std::endl;
+    // for(auto i : symbolTable){std::cout << "i=" << i.first << " location of symbol" << i.second.first << std::endl;}
     // Check if the expression is a constant
     if (ctx->expr()->CONST()) {
         // If the expression is a constant, load it into %eax
@@ -206,7 +207,8 @@ antlrcpp::Any CodeGenVisitor::visitExprc(ifccParser::ExprcContext *ctx) {
             std::cout << "    addl -" << varStackOffset << "(%rbp), %eax" << std::endl;
         } else if (ctx->OPA()->getText() == "-") {            
             int varStackOffset = symbolTable[temp].first;
-            std::cout << "    subl -" << varStackOffset << "(%rbp), %eax" << std::endl;
+            std::cout << "    subl %eax, -" << varStackOffset << "(%rbp)" << std::endl;
+            std::cout << "    movl  -" << varStackOffset << "(%rbp),"<< " %eax"<< std::endl;
         }
     }
 
