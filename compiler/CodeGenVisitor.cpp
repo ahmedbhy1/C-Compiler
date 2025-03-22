@@ -335,7 +335,14 @@ antlrcpp::Any CodeGenVisitor::visitMult_expr(ifccParser::Mult_exprContext *ctx) 
             std::cout <<"    movl %eax, %ecx" << std::endl;
             std::cout <<"    movl -" << varStackOffset << "(%rbp), %eax"<<std::endl;
             std::cout <<"    cltd" <<std::endl;                        // Sign-extend %eax into %edx:%eax
-            std::cout <<"    idivl %ecx"<<std::endl;                   // %eax = %eax / %ecx
+            std::cout <<"    idivl %ecx"<<std::endl;                   //    = %eax / %ecx
+        } else if (ctx->OPM()->getText() == "%") {
+            int varStackOffset = symbolTable[temp].first;
+            std::cout <<"    movl %eax, %ecx" << std::endl;  // ecx = 3 //eax = 5
+            std::cout <<"    movl -" << varStackOffset << "(%rbp), %eax"<<std::endl;
+            std::cout <<"    cltd" <<std::endl;                        // Sign-extend %eax into %edx:%eax
+            std::cout <<"    idivl %ecx"<<std::endl;                               // Divide %edx:%eax by %ecx
+            std::cout << "   movl %edx, %eax" << std::endl;                            // Store remainder in %eax (correct result)
         }
     }
 
