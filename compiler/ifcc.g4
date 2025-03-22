@@ -22,8 +22,20 @@ expr
     | exprc
     ;
 
-exprc : mult_expr
-      | mult_expr OPA exprc
+exprc : xor_expr
+        | xor_expr OR exprc
+        ;
+
+xor_expr : and_expr
+        | and_expr XOR xor_expr
+        ;
+
+and_expr : add_expr
+        | add_expr AND and_expr
+        ;
+
+add_expr : mult_expr
+      | mult_expr OPA add_expr
       ;
 
 mult_expr : primary_expr
@@ -41,5 +53,8 @@ CONST  : [0-9]+|'\'' . '\'' ;                 // Match integer constants
 COMMENT : '/*' .*? '*/' -> skip ;  // Skip comments
 DIRECTIVE : '#' .*? '\n' -> skip ; // Skip preprocessor directives
 WS     : [ \t\r\n]+ -> channel(HIDDEN) ; // Skip whitespace
+OR : '|';
+AND : '&';
+XOR : '^';
 OPA : '+' | '-';
 OPM : '*' | '/';

@@ -207,7 +207,82 @@ antlrcpp::Any CodeGenVisitor::visitExprc(ifccParser::ExprcContext *ctx) {
     return left;
 }
 */
+
 antlrcpp::Any CodeGenVisitor::visitExprc(ifccParser::ExprcContext *ctx) {
+    // Visit the left mult_expr and compute its value in %eax
+    this->visit(ctx->xor_expr());
+
+    // If there's an addition/subtraction, handle it
+    if (ctx->OR()) {
+        // Save the left result to a temporary variable on the stack
+        std::string temp = newTemp();
+        symbolTable[temp].first = stackOffset; // Add variable to symbol table
+        std::cout << "    movl %eax, -" << stackOffset << "(%rbp)" << std::endl;
+        stackOffset+=4;
+        // Visit the right exprc and compute its value in %eax
+        this->visit(ctx->exprc());
+
+        // Perform the operation
+        
+        int varStackOffset = symbolTable[temp].first;
+        std::cout << "    or -" << varStackOffset << "(%rbp), %eax" << std::endl;
+        
+    }
+
+    return nullptr;
+}
+
+
+antlrcpp::Any CodeGenVisitor::visitXor_expr(ifccParser::Xor_exprContext *ctx) {
+    // Visit the left mult_expr and compute its value in %eax
+    this->visit(ctx->and_expr());
+
+    // If there's an addition/subtraction, handle it
+    if (ctx->XOR()) {
+        // Save the left result to a temporary variable on the stack
+        std::string temp = newTemp();
+        symbolTable[temp].first = stackOffset; // Add variable to symbol table
+        std::cout << "    movl %eax, -" << stackOffset << "(%rbp)" << std::endl;
+        stackOffset+=4;
+        // Visit the right exprc and compute its value in %eax
+        this->visit(ctx->xor_expr());
+
+        // Perform the operation
+        
+        int varStackOffset = symbolTable[temp].first;
+        std::cout << "    xor -" << varStackOffset << "(%rbp), %eax" << std::endl;
+        
+    }
+
+    return nullptr;
+}
+
+
+antlrcpp::Any CodeGenVisitor::visitAnd_expr(ifccParser::And_exprContext *ctx) {
+    // Visit the left mult_expr and compute its value in %eax
+    this->visit(ctx->add_expr());
+
+    // If there's an addition/subtraction, handle it
+    if (ctx->AND()) {
+        // Save the left result to a temporary variable on the stack
+        std::string temp = newTemp();
+        symbolTable[temp].first = stackOffset; // Add variable to symbol table
+        std::cout << "    movl %eax, -" << stackOffset << "(%rbp)" << std::endl;
+        stackOffset+=4;
+        // Visit the right exprc and compute its value in %eax
+        this->visit(ctx->and_expr());
+
+        // Perform the operation
+        
+        int varStackOffset = symbolTable[temp].first;
+        std::cout << "    and -" << varStackOffset << "(%rbp), %eax" << std::endl;
+        
+    }
+
+    return nullptr;
+}
+
+antlrcpp::Any CodeGenVisitor::visitAdd_expr(ifccParser::Add_exprContext *ctx) {
     // Visit the left mult_expr and compute its value in %eax
     this->visit(ctx->mult_expr());
 
@@ -219,7 +294,7 @@ antlrcpp::Any CodeGenVisitor::visitExprc(ifccParser::ExprcContext *ctx) {
         std::cout << "    movl %eax, -" << stackOffset << "(%rbp)" << std::endl;
         stackOffset+=4;
         // Visit the right exprc and compute its value in %eax
-        this->visit(ctx->exprc());
+        this->visit(ctx->add_expr());
 
         // Perform the operation
         if (ctx->OPA()->getText() == "+") {
