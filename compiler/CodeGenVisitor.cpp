@@ -66,15 +66,15 @@ antlrcpp::Any CodeGenVisitor::visitAssign_stmt(ifccParser::Assign_stmtContext *c
         int valeur = std::stoi(ctx->expr()->CONST()->getText());
         std::cout << "    movl $" << valeur << ", -" << varOffset << "(%rbp)\n";
         symbolTable[varName].second = valeur;
-    } else if (ctx->expr()->exprc()) {
+    } /*else if (ctx->expr()->exprc()) {
         this->visit(ctx->expr()->exprc());
         std::cout << "    movl %eax, -" << varOffset << "(%rbp)\n";
         /*
             int valeur = (int)this->visit(ctx->expr()->exprc()); // Compute the value for internal tracking
             std::cout << "    movl $" << valeur << ", -" << varOffset << "(%rbp)\n";
             symbolTable[varName].second = valeur;
-        */
-    } else {
+        
+    } */else {
         // Generate the code for the expression and store in %eax
         this->visit(ctx->expr());
         std::cout << "    movl %eax, -" << varOffset << "(%rbp)\n";
@@ -129,87 +129,57 @@ antlrcpp::Any CodeGenVisitor::visitReturn_stmt(ifccParser::Return_stmtContext *c
 }
 
 antlrcpp::Any CodeGenVisitor::visitExpr(ifccParser::ExprContext *ctx) {
-    if (ctx->CONST()) {
-        int retval = std::stoi(ctx->CONST()->getText());
-        std::cout << "    movl $" << retval << ", %eax\n";
-    }
-    else if (ctx->ID()) {
-        std::string varName = ctx->ID()->getText();
+    // Visit the left expression (exprc)
+    //std::cout<< "did we even enter here visitExpr!"<<ctx->getText()<<std::endl;
+    this->visit(ctx->exprc());
+    //std::cout<< "did we even enter here visitExpr!"<<ctx->getText()<<std::endl;
+    // If there is an operator, handle the comparison
+    if (ctx->COMP()) {
+        //std::cout<< "is there an operator ?"<<std::endl;
+        std::string op = ctx->COMP()->getText();
 
-        if (symbolTable.find(varName) == symbolTable.end()) {
-            throw std::runtime_error("Variable '" + varName + "' not declared");
-        }
-
-        int location = symbolTable[varName].first;
-        std::cout << "    movl -" << location << "(%rbp), %eax\n";
-    }
-    else if (ctx->op) {
-        std::string op = ctx->op->getText();
-        // Evaluate left operand
-        this->visit(ctx->expr(0));
+        // Push the result of the left expression onto the stack
         std::cout << "    pushq %rax\n";
-        // Evaluate right operand
-        this->visit(ctx->expr(1));
-        std::cout << "    movl %eax, %ebx\n"; // Right operand in ebx
 
-        // Restore left operand
+        // Visit the right expression
+        this->visit(ctx->expr());
+
+        // Move the result of the right expression to %ebx
+        std::cout << "    movl %eax, %ebx\n";
+
+        // Pop the left expression result from the stack into %eax
         std::cout << "    popq %rax\n";
 
-        // Perform comparison: compare left (%eax) and right (%ebx)
+        // Compare the two values
         std::cout << "    cmpl %ebx, %eax\n";
 
-        // Set result in %al (1 if true, 0 if false)
+        // Set the result in %al based on the comparison
         if (op == "==") {
             std::cout << "    sete %al\n";
-        }
-        else if (op == "!=") {
+        } else if (op == "!=") {
             std::cout << "    setne %al\n";
-        }
-        else if (op == "<") {
+        } else if (op == "<") {
             std::cout << "    setl %al\n";
-        }
-        else if (op == "<=") {
+        } else if (op == "<=") {
             std::cout << "    setle %al\n";
-        }
-        else if (op == ">") {
+        } else if (op == ">") {
             std::cout << "    setg %al\n";
-        }
-        else if (op == ">=") {
+        } else if (op == ">=") {
             std::cout << "    setge %al\n";
-        }
-        else {
+        } else {
             throw std::runtime_error("Unsupported comparison operator: " + op);
         }
 
-        // Zero-extend the result in %al to %eax (final result: 0 or 1)
+        // Zero-extend the result in %al to %eax
         std::cout << "    movzbl %al, %eax\n";
     }
-    
-    //std::cout << "we have one expression" << std::endl;
+
     return 0;
 }
-/*
-antlrcpp::Any CodeGenVisitor::visitExprc(ifccParser::ExprcContext *ctx) {
-    // Evaluate the first mult_expr
-    int left = this->visit(ctx->mult_expr());
-
-    // If there's an addition/subtraction, evaluate the second mult_expr
-    if (ctx->OPA()) {
-        int right = this->visit(ctx->exprc());
-        if (ctx->OPA()->getText() == "+") {
-            return left + right;
-        } else if (ctx->OPA()->getText() == "-") {
-            return left - right;
-        }
-    }
-
-    // If there's no addition/subtraction, return the result of the first mult_expr
-    return left;
-}
-*/
 
 antlrcpp::Any CodeGenVisitor::visitExprc(ifccParser::ExprcContext *ctx) {
     // Visit the left mult_expr and compute its value in %eax
+    //std::cout<<"we are exprc"<<std::endl;
     this->visit(ctx->xor_expr());
 
     // If there's an addition/subtraction, handle it
@@ -235,6 +205,7 @@ antlrcpp::Any CodeGenVisitor::visitExprc(ifccParser::ExprcContext *ctx) {
 
 antlrcpp::Any CodeGenVisitor::visitXor_expr(ifccParser::Xor_exprContext *ctx) {
     // Visit the left mult_expr and compute its value in %eax
+    //std::cout<<"we are xor"<<std::endl;
     this->visit(ctx->and_expr());
 
     // If there's an addition/subtraction, handle it
@@ -260,6 +231,7 @@ antlrcpp::Any CodeGenVisitor::visitXor_expr(ifccParser::Xor_exprContext *ctx) {
 
 antlrcpp::Any CodeGenVisitor::visitAnd_expr(ifccParser::And_exprContext *ctx) {
     // Visit the left mult_expr and compute its value in %eax
+    //std::cout<<"we are AND"<<std::endl;
     this->visit(ctx->add_expr());
 
     // If there's an addition/subtraction, handle it
@@ -284,6 +256,7 @@ antlrcpp::Any CodeGenVisitor::visitAnd_expr(ifccParser::And_exprContext *ctx) {
 
 antlrcpp::Any CodeGenVisitor::visitAdd_expr(ifccParser::Add_exprContext *ctx) {
     // Visit the left mult_expr and compute its value in %eax
+    //std::cout<<"we are ADD"<<std::endl;
     this->visit(ctx->mult_expr());
 
     // If there's an addition/subtraction, handle it
@@ -310,9 +283,41 @@ antlrcpp::Any CodeGenVisitor::visitAdd_expr(ifccParser::Add_exprContext *ctx) {
     return nullptr;
 }
 
+antlrcpp::Any CodeGenVisitor::visitUnary_expr(ifccParser::Unary_exprContext *ctx) {
+    // Visit the operand (primary_expr or another unary_expr)
+    // std::cout<<"we are UNARY"<<std::endl;
+
+    if (!ctx->UNARY() && !ctx->OPA()){
+        this->visit(ctx->primary_expr());
+    }else if (ctx->UNARY()) {
+        std::string op = ctx->UNARY()->getText();
+        visit(ctx -> unary_expr());
+        if (op == "!") {
+            // Logical NOT: 0 becomes 1, non-zero becomes 0
+            std::cout << "    cmpl $0, %eax\n"; // Compare %eax with 0
+            std::cout << "    sete %al\n";      // Set %al to 1 if %eax == 0, else 0
+            std::cout << "    movzbl %al, %eax\n"; // Zero-extend %al to %eax
+        } else {
+            throw std::runtime_error("Unsupported unary operator: " + op);
+        }
+    }else if(ctx ->OPA()){
+        std::string op = ctx->OPA()->getText();
+        visit(ctx -> unary_expr());
+        if (op == "-") {
+            // Negate the value in %eax
+            std::cout << "    negl %eax\n";
+        }
+    }
+    
+    // The result is in %eax
+    return nullptr;
+}
+
+
+
 antlrcpp::Any CodeGenVisitor::visitMult_expr(ifccParser::Mult_exprContext *ctx) {
     // Visit the left primary_expr and compute its value in %eax
-    this->visit(ctx->primary_expr());
+    this->visit(ctx->unary_expr());
 
     // If there's a multiplication/division, handle it
     if (ctx->OPM()) {
@@ -351,6 +356,7 @@ antlrcpp::Any CodeGenVisitor::visitMult_expr(ifccParser::Mult_exprContext *ctx) 
 }
 
 antlrcpp::Any CodeGenVisitor::visitPrimary_expr(ifccParser::Primary_exprContext *ctx) {
+    //std::cout<<"we are Primary"<<std::endl;
     if (ctx->CONST()) {
         // Load the constant into %eax
         std::cout <<"    movl $" << ctx->CONST()->getText() << ", %eax" << std::endl;
@@ -367,36 +373,3 @@ antlrcpp::Any CodeGenVisitor::visitPrimary_expr(ifccParser::Primary_exprContext 
     // The result is already in %eax
     return nullptr;
 }
-/*
-antlrcpp::Any CodeGenVisitor::visitMult_expr(ifccParser::Mult_exprContext *ctx) {
-    // Evaluate the first primary_expr
-    int left = this->visit(ctx->primary_expr());
-
-    // If there's a multiplication/division, evaluate the second primary_expr
-    if (ctx->OPM()) {
-        int right = this->visit(ctx->mult_expr());
-        if (ctx->OPM()->getText() == "*") {
-            return left * right;
-        } else if (ctx->OPM()->getText() == "/") {
-            return left / right;
-        }
-    }
-
-    // If there's no multiplication/division, return the result of the first primary_expr
-    return left;
-}
-*/
-/*
-antlrcpp::Any CodeGenVisitor::visitPrimary_expr(ifccParser::Primary_exprContext *ctx) {
-    if (ctx->CONST()) {
-        // Return the constant value
-        return std::stoi(ctx->CONST()->getText());
-    } else if (ctx->ID()) {
-        return symbolTable[ctx->ID()->getText()].second;
-    } else if (ctx->exprc()) {
-        // Handle grouped expressions
-        return this->visit(ctx->exprc());
-    }
-    return 0;
-}
-*/
