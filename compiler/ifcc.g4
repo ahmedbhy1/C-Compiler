@@ -15,11 +15,10 @@ assign_stmt : ID '=' expr ';' ;
 
 return_stmt : RETURN expr ';' ;
 
-expr
-    : expr op=('==' | '!=' | '>' | '<' | '>=' | '<=') expr
-    | ID
-    | CONST
-    | exprc
+expr:  exprc 
+    |  exprc COMP expr
+    |  CONST
+    |  ID
     ;
 
 exprc : xor_expr
@@ -38,9 +37,14 @@ add_expr : mult_expr
       | mult_expr OPA add_expr
       ;
 
-mult_expr : primary_expr
-          | primary_expr OPM mult_expr
+mult_expr : unary_expr
+          | unary_expr OPM mult_expr
           ;
+
+unary_expr : primary_expr
+           | UNARY unary_expr
+           | OPA unary_expr 
+           ;
 
 primary_expr : CONST
              | ID
@@ -53,6 +57,9 @@ CONST  : [0-9]+|'\'' . '\'' ;                 // Match integer constants
 COMMENT : '/*' .*? '*/' -> skip ;  // Skip comments
 DIRECTIVE : '#' .*? '\n' -> skip ; // Skip preprocessor directives
 WS     : [ \t\r\n]+ -> channel(HIDDEN) ; // Skip whitespace
+
+COMP: '==' | '!=' | '>' | '<' | '>=' | '<=';
+UNARY :  '!';
 OR : '|';
 AND : '&';
 XOR : '^';

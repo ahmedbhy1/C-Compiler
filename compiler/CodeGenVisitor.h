@@ -21,6 +21,8 @@ class  CodeGenVisitor : public ifccBaseVisitor {
         virtual antlrcpp::Any visitAssign_stmt(ifccParser::Assign_stmtContext *ctx) override;
         virtual antlrcpp::Any visitMult_expr(ifccParser::Mult_exprContext *ctx) override;
         virtual antlrcpp::Any visitPrimary_expr(ifccParser::Primary_exprContext *ctx) override;
+        virtual antlrcpp::Any visitUnary_expr(ifccParser::Unary_exprContext *ctx) override;
+        
 private:
         //using SymbolType = std::variant<int>;
         std::map<std::string, std::pair<int,int>> symbolTable;
