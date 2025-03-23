@@ -29,11 +29,8 @@ antlrcpp::Any CodeGenVisitor::visitDecl_stmt(ifccParser::Decl_stmtContext *ctx) 
 
     for (const auto& varName : varNames) {
         symbolTable[varName].first = stackOffset;
-        //stackOffset += 4; 
         std::cout << "    subq $4, %rsp\n";
-    } 
-
-    // Handle optional initialization
+        // Handle optional initialization
     if (ctx->expr()) {
         std::string constantText = ctx->expr()->getText();
     //std::cout << "Assignment statement: " << ctx->expr() << std::endl;
@@ -51,6 +48,9 @@ antlrcpp::Any CodeGenVisitor::visitDecl_stmt(ifccParser::Decl_stmtContext *ctx) 
         }
     }
     stackOffset+=4;
+    } 
+
+    
 
     return 0;
 }
