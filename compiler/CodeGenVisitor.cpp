@@ -29,12 +29,9 @@ antlrcpp::Any CodeGenVisitor::visitDecl_stmt(ifccParser::Decl_stmtContext *ctx) 
 
     for (const auto& varName : varNames) {
         symbolTable[varName].first = stackOffset;
-        stackOffset += 4; 
+        //stackOffset += 4; 
         std::cout << "    subq $4, %rsp\n";
     } 
-    
-    //std::cout<<"show the var name : "<< varName <<"\n" ;
-    std::cout << "    subq $4, %rsp\n"; // Allocate space on the stack
 
     // Handle optional initialization
     if (ctx->expr()) {
