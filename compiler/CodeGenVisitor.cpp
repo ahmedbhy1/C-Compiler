@@ -22,8 +22,16 @@ antlrcpp::Any CodeGenVisitor::visitProg(ifccParser::ProgContext *ctx) {
 
 antlrcpp::Any CodeGenVisitor::visitDecl_stmt(ifccParser::Decl_stmtContext *ctx) {
     //std::cout << "we have one declaration" << std::endl;
-    std::string varName = ctx->ID()->getText();
-    symbolTable[varName].first = stackOffset; // Add variable to symbol table
+    std::vector<std::string> varNames;
+    for (auto id : ctx->ID()) {
+        varNames.push_back(id->getText());
+    }
+
+    for (const auto& varName : varNames) {
+        symbolTable[varName].first = stackOffset;
+        stackOffset += 4; 
+        std::cout << "    subq $4, %rsp\n";
+    } 
     
     //std::cout<<"show the var name : "<< varName <<"\n" ;
     std::cout << "    subq $4, %rsp\n"; // Allocate space on the stack

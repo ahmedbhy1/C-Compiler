@@ -47,7 +47,23 @@ public:
     return visitChildren(ctx);
   }
 
+  virtual antlrcpp::Any visitXor_expr(ifccParser::Xor_exprContext *ctx) override {
+    return visitChildren(ctx);
+  }
+
+  virtual antlrcpp::Any visitAnd_expr(ifccParser::And_exprContext *ctx) override {
+    return visitChildren(ctx);
+  }
+
+  virtual antlrcpp::Any visitAdd_expr(ifccParser::Add_exprContext *ctx) override {
+    return visitChildren(ctx);
+  }
+
   virtual antlrcpp::Any visitMult_expr(ifccParser::Mult_exprContext *ctx) override {
+    return visitChildren(ctx);
+  }
+
+  virtual antlrcpp::Any visitUnary_expr(ifccParser::Unary_exprContext *ctx) override {
     return visitChildren(ctx);
   }
 
