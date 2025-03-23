@@ -20,33 +20,40 @@ antlrcpp::Any CodeGenVisitor::visitProg(ifccParser::ProgContext *ctx) {
 }
 
 antlrcpp::Any CodeGenVisitor::visitDecl_stmt(ifccParser::Decl_stmtContext *ctx) {
-    std::string varName = ctx->ID()->getText();
-    symbolTable[varName].first = stackOffset; // Add variable to symbol table
-    int localStackOffset = stackOffset;
-    std::cout << "    subq $4, %rsp\n"; // Allocate space on the stack
-
-    // Handle optional initialization
-    if (ctx->expr()) {
-        std::string constantText = ctx->expr()->getText();
-        int value;
-
-        // Check if it's a character constant
-        if (constantText.front() == '\'' && constantText.back() == '\'' && constantText.size() == 3) {
-            value = static_cast<int>(constantText[1]);  // Extract ASCII value of character
-            std::cout << "    movl $" << value << ", -" << localStackOffset << "(%rbp) \n";
-        }
-        // Otherwise, assume it's a number
-        else if(ctx->expr()->CONST()){
-            std::cout << "constantText = "<< constantText <<std::endl;
-            value = std::stoi(constantText);
-            std::cout << "    movl $" << value << ", -" << localStackOffset << "(%rbp) \n";
-        }
-        else {
-            this->visit(ctx->expr());
-            std::cout << "    movl %eax, -"<< localStackOffset << "(%rbp) \n";
-        }
+    //std::cout << "we have one declaration" << std::endl;
+    std::vector<std::string> varNames;
+    for (auto id : ctx->ID()) {
+        varNames.push_back(id->getText());
     }
-    stackOffset+=4;
+
+    for (const auto& varName : varNames) {
+        symbolTable[varName].first = stackOffset;
+        std::cout << "    subq $4, %rsp\n";
+        // Handle optional initialization
+        if (ctx->expr()) {
+            int localStackOffset = stackOffset;
+            std::string constantText = ctx->expr()->getText();
+        //std::cout << "Assignment statement: " << ctx->expr() << std::endl;
+            int value;
+
+            // Check if it's a character constant
+            if (constantText.front() == '\'' && constantText.back() == '\'' && constantText.size() == 3) {
+                value = static_cast<int>(constantText[1]);  // Extract ASCII value of character
+                std::cout << "    movl $" << value << ", -" << localStackOffset << "(%rbp) \n";
+            } 
+            // Otherwise, assume it's a number
+            else if(ctx->expr()->CONST()) {
+                value = std::stoi(constantText);
+                std::cout << "    movl $" << value << ", -" << localStackOffset << "(%rbp) \n";
+            }else{
+                this -> visit(ctx->expr());
+                std::cout << "    movl %eax , -" <<localStackOffset << "(%rbp) \n";
+            }
+        }
+        stackOffset+=4;
+    }
+
+    
 
     return 0;
 }
@@ -65,6 +72,7 @@ antlrcpp::Any CodeGenVisitor::visitAssign_stmt(ifccParser::Assign_stmtContext *c
         int valeur = std::stoi(ctx->expr()->CONST()->getText());
         std::cout << "    movl $" << valeur << ", -" << varOffset << "(%rbp)\n";
         symbolTable[varName].second = valeur;
+    } else {
     } else {
         // Generate the code for the expression and store in %eax
         this->visit(ctx->expr());
@@ -339,7 +347,9 @@ antlrcpp::Any CodeGenVisitor::visitPrimary_expr(ifccParser::Primary_exprContext 
         std::cout<<"    movl -" << variableSymbol << "(%rbp), %eax"<<std::endl;
 
     } else if (ctx->expr()) {
+    } else if (ctx->expr()) {
         // Handle grouped expressions
+        this->visit(ctx->expr());
         this->visit(ctx->expr());
     }
 

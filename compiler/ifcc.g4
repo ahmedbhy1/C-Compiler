@@ -9,7 +9,8 @@ stmt : decl_stmt
      | return_stmt
      ;
 
-decl_stmt : 'int' ID ('=' expr)? ';'|'char' ID ('=' expr)? ';' ;
+decl_stmt : 'int' ID (',' ID)* ('=' expr)? ';' | 'char' ID (',' ID)* ('=' expr)? ';';
+
 
 assign_stmt : ID '=' expr ';' ;
 
