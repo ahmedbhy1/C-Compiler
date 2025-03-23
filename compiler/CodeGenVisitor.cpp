@@ -22,7 +22,7 @@ antlrcpp::Any CodeGenVisitor::visitProg(ifccParser::ProgContext *ctx) {
 antlrcpp::Any CodeGenVisitor::visitDecl_stmt(ifccParser::Decl_stmtContext *ctx) {
     std::string varName = ctx->ID()->getText();
     symbolTable[varName].first = stackOffset; // Add variable to symbol table
-    
+    int localStackOffset = stackOffset;
     std::cout << "    subq $4, %rsp\n"; // Allocate space on the stack
 
     // Handle optional initialization
@@ -33,12 +33,17 @@ antlrcpp::Any CodeGenVisitor::visitDecl_stmt(ifccParser::Decl_stmtContext *ctx) 
         // Check if it's a character constant
         if (constantText.front() == '\'' && constantText.back() == '\'' && constantText.size() == 3) {
             value = static_cast<int>(constantText[1]);  // Extract ASCII value of character
-            std::cout << "    movl $" << value << ", -" << stackOffset << "(%rbp) \n";
-        } 
+            std::cout << "    movl $" << value << ", -" << localStackOffset << "(%rbp) \n";
+        }
         // Otherwise, assume it's a number
-        else {
+        else if(ctx->expr()->CONST()){
+            std::cout << "constantText = "<< constantText <<std::endl;
             value = std::stoi(constantText);
-            std::cout << "    movl $" << value << ", -" << stackOffset << "(%rbp) \n";
+            std::cout << "    movl $" << value << ", -" << localStackOffset << "(%rbp) \n";
+        }
+        else {
+            this->visit(ctx->expr());
+            std::cout << "    movl %eax, -"<< localStackOffset << "(%rbp) \n";
         }
     }
     stackOffset+=4;
