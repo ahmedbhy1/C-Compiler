@@ -48,7 +48,7 @@ unary_expr : primary_expr
 
 primary_expr : CONST
              | ID
-             | '(' exprc ')'
+             | '(' expr ')'
              ;
 
 RETURN : 'return' ;
