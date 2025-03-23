@@ -75,15 +75,7 @@ antlrcpp::Any CodeGenVisitor::visitAssign_stmt(ifccParser::Assign_stmtContext *c
         int valeur = std::stoi(ctx->expr()->CONST()->getText());
         std::cout << "    movl $" << valeur << ", -" << varOffset << "(%rbp)\n";
         symbolTable[varName].second = valeur;
-    } /*else if (ctx->expr()->exprc()) {
-        this->visit(ctx->expr()->exprc());
-        std::cout << "    movl %eax, -" << varOffset << "(%rbp)\n";
-        /*
-            int valeur = (int)this->visit(ctx->expr()->exprc()); // Compute the value for internal tracking
-            std::cout << "    movl $" << valeur << ", -" << varOffset << "(%rbp)\n";
-            symbolTable[varName].second = valeur;
-        
-    } */else {
+    } else {
         // Generate the code for the expression and store in %eax
         this->visit(ctx->expr());
         std::cout << "    movl %eax, -" << varOffset << "(%rbp)\n";
@@ -374,9 +366,9 @@ antlrcpp::Any CodeGenVisitor::visitPrimary_expr(ifccParser::Primary_exprContext 
         int variableSymbol = symbolTable[ctx->ID()->getText()].first;
         std::cout<<"    movl -" << variableSymbol << "(%rbp), %eax"<<std::endl;
 
-    } else if (ctx->exprc()) {
+    } else if (ctx->expr()) {
         // Handle grouped expressions
-        this->visit(ctx->exprc());
+        this->visit(ctx->expr());
     }
 
     // The result is already in %eax
