@@ -9,14 +9,19 @@ prog : 'int' ID '(' ')' '{' stmt* '}'
 stmt : decl_stmt
      | assign_stmt
      | return_stmt
+     | putchar_stmt
+     | getchar_stmt
      ;
 
 decl_stmt : 'int' ID (',' ID)* ('=' expr)? ';' | 'char' ID (',' ID)* ('=' expr)? ';';
 
-
 assign_stmt : ID '=' expr ';' ;
 
 return_stmt : RETURN expr ';' ;
+
+putchar_stmt : 'putchar' '(' expr ')' ';' ;
+
+getchar_stmt : 'getchar' ';' ;
 
 expr:  exprc 
     |  exprc COMP expr

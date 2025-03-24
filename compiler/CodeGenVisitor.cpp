@@ -297,3 +297,29 @@ antlrcpp::Any CodeGenVisitor::visitPrimary_expr(ifccParser::Primary_exprContext 
 
     return nullptr;
 }
+
+
+antlrcpp::Any CodeGenVisitor::visitPutchar_stmt(ifccParser::Putchar_stmtContext *ctx) {
+    // Visit the expression to get the value to be printed (character)
+    this->visit(ctx->expr());
+    
+    // Call putchar
+    std::cout << "    movl %eax, %edi" << std::endl;  // Move the value into %edi (argument for putchar)
+    std::cout << "    call putchar" << std::endl;    // Call the putchar function
+    
+    return 0;
+}
+
+
+antlrcpp::Any CodeGenVisitor::visitGetchar_stmt(ifccParser::Getchar_stmtContext *ctx) {
+    // Call getchar
+    std::cout << "    call getchar" << std::endl;
+    
+    // Store the result (character) in a variable
+    std::cout << "    movl %eax, -" << stackOffset << "(%rbp)" << std::endl;
+    
+    stackOffset += 4;  // Increment stack offset for next variable
+    
+    return 0;
+}
+
