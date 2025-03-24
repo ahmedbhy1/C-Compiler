@@ -18,8 +18,10 @@ assign_stmt : ID '=' expr ';' ;
 
 return_stmt : 'return' expr ';' ;
 
-if_stmt : 'if' '(' expr ')' '{' stmt* '}' 
-        | 'if' '(' expr ')' '{' stmt* '}' 'else' '{' stmt* '}' ;
+if_stmt : 'if' '(' expr ')' '{' stmt* '}' if_else_stmt? ;
+
+if_else_stmt : 'else' '{' stmt* '}' ;
+
 
 while_stmt : 'while' '(' expr ')' '{' stmt* '}' ;
 
