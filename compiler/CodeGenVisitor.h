@@ -14,15 +14,19 @@ class  CodeGenVisitor : public ifccBaseVisitor {
         virtual antlrcpp::Any visitProg(ifccParser::ProgContext *ctx) override;
         virtual antlrcpp::Any visitDecl_stmt(ifccParser::Decl_stmtContext *ctx) override;
         virtual antlrcpp::Any visitReturn_stmt(ifccParser::Return_stmtContext *ctx) override;
-        virtual antlrcpp::Any visitExpr(ifccParser::ExprContext *ctx) override;
-        virtual antlrcpp::Any visitAdd_expr(ifccParser::Add_exprContext *ctx) override;
-        virtual antlrcpp::Any visitAnd_expr(ifccParser::And_exprContext *ctx) override;
-        virtual antlrcpp::Any visitXor_expr(ifccParser::Xor_exprContext *ctx) override;
-        virtual antlrcpp::Any visitExprc(ifccParser::ExprcContext *ctx) override;
+        virtual antlrcpp::Any visitConst(ifccParser::ConstContext *ctx) override;
+        virtual antlrcpp::Any visitUnary(ifccParser::UnaryContext *ctx) override;
+        virtual antlrcpp::Any visitOr(ifccParser::OrContext *ctx) override;
+        virtual antlrcpp::Any visitAnd(ifccParser::AndContext *ctx) override;
+        virtual antlrcpp::Any visitXor(ifccParser::XorContext *ctx) override;
+        virtual antlrcpp::Any visitPlus(ifccParser::PlusContext *ctx) override;
+        virtual antlrcpp::Any visitMul(ifccParser::MulContext *ctx) override;
         virtual antlrcpp::Any visitAssign_stmt(ifccParser::Assign_stmtContext *ctx) override;
-        virtual antlrcpp::Any visitMult_expr(ifccParser::Mult_exprContext *ctx) override;
-        virtual antlrcpp::Any visitPrimary_expr(ifccParser::Primary_exprContext *ctx) override;
-        virtual antlrcpp::Any visitUnary_expr(ifccParser::Unary_exprContext *ctx) override;
+        virtual antlrcpp::Any visitComp(ifccParser::CompContext *ctx);
+        virtual antlrcpp::Any visitId(ifccParser::IdContext *ctx);
+        virtual antlrcpp::Any visitParent(ifccParser::ParentContext *ctx);
+        virtual antlrcpp::Any visitMoin(ifccParser::MoinContext *ctx);
+        virtual antlrcpp::Any visitExpr(ifccParser::ExprContext *ctx);
         
 private:
         std::map<std::string, std::pair<int,int>> symbolTable;
