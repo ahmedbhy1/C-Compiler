@@ -15,16 +15,17 @@ decl_stmt : 'int' ID (',' ID)* ('=' expr)? ';' | 'char' ID (',' ID)* ('=' expr)?
 assign_stmt : ID '=' expr ';' ;
 return_stmt : RETURN expr ';' ;
 
-expr : expr COMP expr #Comparaison
-     | expr OR expr #Or
-     | expr XOR expr #Comparaison
-     | expr AND expr #Comparaison
-     | expr OPA expr #Comparaison
-     | expr OPM expr #Comparaison
-     | UNARY expr #Comparaison
-     | CONST
-     | ID
-     | '(' expr ')'
+expr : UNARY expr # unary
+     | OPA expr # moin
+     | expr OPM expr # mul   
+     | expr OPA expr # plus
+     | expr AND expr # and
+     | expr XOR expr # xor
+     | expr OR expr # or
+     | expr COMP expr # comp
+     | CONST # const
+     | ID # id
+     | '(' expr ')' # parent
      ;
 
 RETURN : 'return' ;
