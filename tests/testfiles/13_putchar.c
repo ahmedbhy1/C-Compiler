@@ -1,10 +1,5 @@
-int main() {
-    putchar('A');
-    putchar('\n');
-
-    int ch;
-    ch = getchar();
-    putchar(ch);
-
+int main() { 
+    putchar('a');
+    putchar('b');
     return 0;
-}
+  }

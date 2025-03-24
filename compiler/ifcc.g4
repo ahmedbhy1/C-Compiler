@@ -10,18 +10,16 @@ stmt : decl_stmt
      | assign_stmt
      | return_stmt
      | putchar_stmt
-     | getchar_stmt
      ;
+
+
+putchar_stmt : 'putchar' '(' expr ')' ';' ;
 
 decl_stmt : 'int' ID (',' ID)* ('=' expr)? ';' | 'char' ID (',' ID)* ('=' expr)? ';';
 
 assign_stmt : ID '=' expr ';' ;
 
 return_stmt : RETURN expr ';' ;
-
-putchar_stmt : 'putchar' '(' expr ')' ';' ;
-
-getchar_stmt : 'getchar' ';' ;
 
 expr:  exprc 
     |  exprc COMP expr
@@ -57,6 +55,7 @@ unary_expr : primary_expr
 primary_expr : CONST
              | ID
              | '(' expr ')'
+             | 'getchar' '(' ')'
              ;
 
 RETURN : 'return' ;
