@@ -12,47 +12,20 @@ stmt : decl_stmt
      ;
 
 decl_stmt : 'int' ID (',' ID)* ('=' expr)? ';' | 'char' ID (',' ID)* ('=' expr)? ';';
-
-
 assign_stmt : ID '=' expr ';' ;
-
 return_stmt : RETURN expr ';' ;
 
-expr:  exprc 
-    |  exprc COMP expr
-    |  CONST
-    |  ID
-    ;
-
-exprc : xor_expr
-        | xor_expr OR exprc
-        ;
-
-xor_expr : and_expr
-        | and_expr XOR xor_expr
-        ;
-
-and_expr : add_expr
-        | add_expr AND and_expr
-        ;
-
-add_expr : mult_expr
-      | mult_expr OPA add_expr
-      ;
-
-mult_expr : unary_expr
-          | unary_expr OPM mult_expr
-          ;
-
-unary_expr : primary_expr
-           | UNARY unary_expr
-           | OPA unary_expr 
-           ;
-
-primary_expr : CONST
-             | ID
-             | '(' expr ')'
-             ;
+expr : expr COMP expr #Comparaison
+     | expr OR expr #Or
+     | expr XOR expr #Comparaison
+     | expr AND expr #Comparaison
+     | expr OPA expr #Comparaison
+     | expr OPM expr #Comparaison
+     | UNARY expr #Comparaison
+     | CONST
+     | ID
+     | '(' expr ')'
+     ;
 
 RETURN : 'return' ;
 ID     : [a-zA-Z_][a-zA-Z_0-9]* ; // Match identifiers (e.g., variable names)
