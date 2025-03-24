@@ -1,8 +1,10 @@
 grammar ifcc;
 
-axiom : prog EOF ;
+axiom : progs EOF ;
 
-prog : 'int' 'main' '(' ')' '{' stmt* '}' ;
+progs : prog* ;
+prog : 'int' ID '(' ')' '{' stmt* '}'
+     | 'void' ID '(' ')' '{' stmt* '}';
 
 stmt : decl_stmt
      | assign_stmt
