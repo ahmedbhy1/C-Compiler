@@ -1,9 +1,17 @@
 #include "CodeGenVisitor.h"
 #include <iostream>
 
-antlrcpp::Any CodeGenVisitor::visitProg(ifccParser::ProgContext *ctx) {
+antlrcpp::Any CodeGenVisitor::visitProgs(ifccParser::ProgsContext *ctx) {
     std::cout << ".globl main\n";
-    std::cout << "main:\n";
+    for(auto i : ctx->prog()){
+        this->visit(i);
+    }
+    return 0;
+}
+
+antlrcpp::Any CodeGenVisitor::visitProg(ifccParser::ProgContext *ctx) {
+    std::string name = ctx->ID()->getText();
+    std::cout << name<<":\n";
     // Save the base pointer && Set the base pointer to the current stack pointer
     std::cout << "    pushq %rbp\n";
     std::cout << "    movq %rsp, %rbp\n";
