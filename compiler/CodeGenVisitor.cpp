@@ -233,3 +233,12 @@ antlrcpp::Any CodeGenVisitor::visitMoin(ifccParser::MoinContext *ctx){
     }
     return 0;
 }
+
+antlrcpp::Any CodeGenVisitor::visitFunct(ifccParser::FunctContext *ctx){
+    if (ctx-> ID() && ctx-> OPENPARENT() && ctx -> CLOSEPARENT()) {
+        std::string functionName = ctx-> ID()->getText();
+        std::cout << "    call "<<functionName << "\n";
+    }
+    return 0;
+}
+

@@ -27,6 +27,7 @@ class  CodeGenVisitor : public ifccBaseVisitor {
         virtual antlrcpp::Any visitParent(ifccParser::ParentContext *ctx);
         virtual antlrcpp::Any visitMoin(ifccParser::MoinContext *ctx);
         virtual antlrcpp::Any visitExpr(ifccParser::ExprContext *ctx);
+        virtual antlrcpp::Any visitFunct(ifccParser::FunctContext *ctx);
         
 private:
         std::map<std::string, std::pair<int,int>> symbolTable;
