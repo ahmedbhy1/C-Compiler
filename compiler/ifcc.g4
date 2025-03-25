@@ -25,8 +25,9 @@ expr : UNARY expr # unary
      | expr OR expr # or
      | expr COMP expr # comp
      | CONST # const
+     | ID OPENPARENT CLOSEPARENT # funct
      | ID # id
-     | '(' expr ')' # parent
+     | OPENPARENT expr CLOSEPARENT # parent
      ;
 
 RETURN : 'return' ;
@@ -43,3 +44,5 @@ AND : '&';
 XOR : '^';
 OPA : '+' | '-';
 OPM : '*' | '/' | '%';
+OPENPARENT : '(';
+CLOSEPARENT: ')';
