@@ -29,23 +29,19 @@ antlrcpp::Any CodeGenVisitor::visitProg(ifccParser::ProgContext *ctx) {
 
 antlrcpp::Any CodeGenVisitor::visitDecl_stmt(ifccParser::Decl_stmtContext *ctx) {
     std::vector<std::string> varNames;
-    for (auto id : ctx->ID()) {
-        varNames.push_back(id->getText());
-    }
 
-    for (const auto& varName : varNames) {
-        symbolTable[varName].first = stackOffset;
-        std::cout << "    subq $4, %rsp\n";
-        if (ctx->expr()) {
+    for (auto i : ctx->equalexpr_stmt()){
+        if (i->ID()){
             int localStackOffset = stackOffset;
-            // Otherwise, if it's a expression
-            this -> visit(ctx->expr());
-            std::cout << "    movl %eax , -" <<localStackOffset << "(%rbp) \n";
-        
+            std::string varName = i->ID()->getText();
+            symbolTable[varName].first = stackOffset;
+            if (i->expr()){
+                this -> visit(i->expr());
+                std::cout << "    movl %eax , -" <<localStackOffset << "(%rbp) \n";
+            }
+            stackOffset+=4;
         }
-        stackOffset+=4;
     }
-
     return 0;
 }
 
