@@ -9,12 +9,17 @@ prog : 'int' ID '(' ')' '{' stmt* '}'
 stmt : decl_stmt
      | assign_stmt
      | return_stmt
+     | if_stmt
+     | while_stmt
      ;
 
 decl_stmt : 'int' equalexpr_stmt (',' equalexpr_stmt )* ';' | 'char' equalexpr_stmt (',' equalexpr_stmt )* ';';
 equalexpr_stmt : ID ('=' expr)? ;
 assign_stmt : ID '=' expr ';' ;
 return_stmt : RETURN expr ';' ;
+if_stmt : 'if' '(' expr ')' '{' stmt* '}' if_else_stmt? ;
+if_else_stmt : 'else' '{' stmt* '}' ;
+while_stmt : 'while' '(' expr ')' '{' stmt* '}' ;
 
 expr : UNARY expr # unary
      | OPA expr # moin

@@ -1,8 +1,8 @@
 int main() {
-    char x = 'A';
-    char y = 'B';
+    char x = 'B';
+    char y = 'A';
     int test;
-    test =  x > y ;
+    test =  x < y ;
     return test;
  }
  

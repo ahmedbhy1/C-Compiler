@@ -242,3 +242,68 @@ antlrcpp::Any CodeGenVisitor::visitFunct(ifccParser::FunctContext *ctx){
     return 0;
 }
 
+
+antlrcpp::Any CodeGenVisitor::visitIf_stmt(ifccParser::If_stmtContext *ctx) {
+    // Créer des labels pour les différentes sections du if
+    std::string label_if_true = "if_true_" + std::to_string(tempCounter++);
+    std::string label_if_end = "if_end_" + std::to_string(tempCounter++);
+    std::string label_else = "if_else_" + std::to_string(tempCounter++);
+
+    // Évaluer l'expression du if
+    this->visit(ctx->expr());  // Visiter l'expression conditionnelle du if
+
+    // Comparer la condition et sauter à l'else si elle est fausse
+    std::cout << "    cmp $0, %eax\n";  // Si l'expression est fausse (0)
+    std::cout << "    je " << label_else << "\n";  // Sauter à l'else si condition fausse
+
+    // Si la condition est vraie, exécuter le bloc du if
+    std::cout << label_if_true << ":\n";
+    for (auto stmt : ctx->stmt()) {
+        this->visit(stmt);  // Visiter chaque instruction du corps du if
+    }
+
+    // Sauter à la fin du if pour éviter l'exécution du else
+    std::cout << "    jmp " << label_if_end << "\n";
+
+    // Bloc else, exécuté si la condition du if est fausse
+    std::cout << label_else << ":\n";
+
+    // Vérifier si le bloc else existe
+    if (ctx->if_else_stmt()) {  // Si le bloc else existe
+        for (auto stmt : ctx->if_else_stmt()->stmt()) {
+            this->visit(stmt);  // Visiter les instructions dans le bloc else
+        }
+    }
+
+    // Fin du if
+    std::cout << label_if_end << ":\n";
+    return 0;
+}
+
+antlrcpp::Any CodeGenVisitor::visitWhile_stmt(ifccParser::While_stmtContext *ctx) {
+    //std::cout<< "we are in while"<<std::endl;
+    std::string label_while_start = "while_start_" + std::to_string(tempCounter++);
+    std::string label_while_end = "while_end_" + std::to_string(tempCounter++);
+
+    // Label de début de la boucle while
+    std::cout << label_while_start << ":\n";
+
+    // Évaluer la condition de la boucle
+    this->visit(ctx->expr());
+
+    // Comparer la condition de la boucle
+    std::cout << "    cmp $0, %eax\n";  // Si l'expression est fausse (0)
+    std::cout << "    je " << label_while_end << "\n";  // Sortir de la boucle si la condition est fausse
+
+    // Exécuter les instructions de la boucle while
+    for (auto stmt : ctx->stmt()) {
+        this->visit(stmt);
+    }
+
+    // Revenir au début de la boucle
+    std::cout << "    jmp " << label_while_start << "\n";
+
+    // Label de fin de la boucle while
+    std::cout << label_while_end << ":\n";
+    return 0;
+}
