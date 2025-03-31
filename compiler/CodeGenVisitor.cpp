@@ -293,8 +293,11 @@ antlrcpp::Any CodeGenVisitor::visitPrimary_expr(ifccParser::Primary_exprContext 
 
     } else if (ctx->expr()) {
         this->visit(ctx->expr());
-    }
-
+    } else if (ctx->expr()) {
+    this->visit(ctx->expr());
+} else if (ctx->children.size() == 3 && ctx->getText() == "getchar()") {
+    std::cout << "    call getchar\n";
+}
     return nullptr;
 }
 
@@ -305,4 +308,17 @@ antlrcpp::Any CodeGenVisitor::visitPutchar_stmt(ifccParser::Putchar_stmtContext 
     return 0;
 }
 
+antlrcpp::Any CodeGenVisitor::visitGetchar_stmt(ifccParser::Getchar_stmtContext *ctx) {
+    std::string varName = ctx->ID()->getText();
+
+    if (symbolTable.find(varName) == symbolTable.end()) {
+        throw std::runtime_error("Variable '" + varName + "' not declared");
+    }
+
+    int varOffset = symbolTable[varName].first;
+
+    std::cout << "    call getchar\n";                    // Result in %eax
+    std::cout << "    movl %eax, -" << varOffset << "(%rbp)\n";  // Store result in variable
+    return 0;
+}
 

@@ -10,8 +10,11 @@ stmt : decl_stmt
      | assign_stmt
      | return_stmt
      | putchar_stmt
+     | getchar_stmt
      ;
 
+
+getchar_stmt : 'getchar' '(' ID ')' ';' ;
 
 putchar_stmt : 'putchar' '(' expr ')' ';' ;
 
