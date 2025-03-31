@@ -325,3 +325,12 @@ antlrcpp::Any CodeGenVisitor::visitGetchar_stmt(ifccParser::Getchar_stmtContext 
     return 0;
 }
 
+antlrcpp::Any CodeGenVisitor::visitBreak_stmt(ifccParser::Break_stmtContext *ctx) {
+    if (breakLabels.empty()) {
+        throw std::runtime_error("`break` used outside of a loop or switch.");
+    }
+    std::cout << "    jmp " << breakLabels.top() << "\n";
+    return 0;
+}
+
+

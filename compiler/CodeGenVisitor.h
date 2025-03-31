@@ -8,6 +8,7 @@
 #include <variant>
 #include <string>
 
+
 class  CodeGenVisitor : public ifccBaseVisitor {
 	public:
         virtual antlrcpp::Any visitProgs(ifccParser::ProgsContext *ctx) override;
@@ -25,6 +26,7 @@ class  CodeGenVisitor : public ifccBaseVisitor {
         virtual antlrcpp::Any visitUnary_expr(ifccParser::Unary_exprContext *ctx) override;
         virtual antlrcpp::Any visitPutchar_stmt(ifccParser::Putchar_stmtContext *ctx) override;
         virtual antlrcpp::Any visitGetchar_stmt(ifccParser::Getchar_stmtContext *ctx) override;
+        virtual antlrcpp::Any visitBreak_stmt(ifccParser::Break_stmtContext *ctx) override;
         
 private:
         std::map<std::string, std::pair<int,int>> symbolTable;
@@ -33,4 +35,5 @@ private:
         std::string newTemp() {
             return "temp_" + std::to_string(tempCounter++);
         }
+        std::stack<std::string> breakLabels; 
 };

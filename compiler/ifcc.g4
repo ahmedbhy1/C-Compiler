@@ -11,8 +11,12 @@ stmt : decl_stmt
      | return_stmt
      | putchar_stmt
      | getchar_stmt
-     ;
+     | break_stmt
+    ;
 
+break_stmt
+    : 'break' ';'
+    ;
 
 getchar_stmt : 'getchar' '(' ID ')' ';' ;
 
