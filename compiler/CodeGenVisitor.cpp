@@ -288,11 +288,14 @@ antlrcpp::Any CodeGenVisitor::visitPrimary_expr(ifccParser::Primary_exprContext 
     if (ctx->CONST()) {
         std::cout <<"    movl $" << ctx->CONST()->getText() << ", %eax" << std::endl;
     } else if (ctx->ID()) {
-        int variableSymbol = symbolTable[ctx->ID()->getText()].first;
-        std::cout<<"    movl -" << variableSymbol << "(%rbp), %eax"<<std::endl;
-
-    } else if (ctx->expr()) {
-        this->visit(ctx->expr());
+        std::string varName = ctx->ID()->getText();
+    
+        if (symbolTable.find(varName) == symbolTable.end()) {
+            throw std::runtime_error("Variable '" + varName + "' not declared");
+        }
+    
+        int variableSymbol = symbolTable[varName].first;
+        std::cout << "    movl -" << variableSymbol << "(%rbp), %eax" << std::endl;
     } else if (ctx->expr()) {
     this->visit(ctx->expr());
 } else if (ctx->children.size() == 3 && ctx->getText() == "getchar()") {
@@ -302,9 +305,9 @@ antlrcpp::Any CodeGenVisitor::visitPrimary_expr(ifccParser::Primary_exprContext 
 }
 
 antlrcpp::Any CodeGenVisitor::visitPutchar_stmt(ifccParser::Putchar_stmtContext *ctx) {
-    this->visit(ctx->expr());                   // Résultat de l'expression dans %eax
-    std::cout << "    movl %eax, %edi\n";       // Déplace dans %edi pour l'appel
-    std::cout << "    call putchar\n";          // Appel de putchar
+    this->visit(ctx->expr());     
+    std::cout << "    movl %eax, %edi\n";
+    std::cout << "    call putchar\n";
     return 0;
 }
 
