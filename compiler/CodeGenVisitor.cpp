@@ -35,10 +35,16 @@ antlrcpp::Any CodeGenVisitor::visitProg(ifccParser::ProgContext *ctx) {
 antlrcpp::Any CodeGenVisitor::visitDecl_stmt(ifccParser::Decl_stmtContext *ctx) {
     std::vector<std::string> varNames;
 
-    for (auto i : ctx->equalexpr_stmt()){
+    for (auto i : ctx->equalexpr_stmt()) {
+        // variable been declared
         if (i->ID()){
             int localStackOffset = stackOffset;
             std::string varName = i->ID()->getText();
+
+            if (symbolTable.find(varName) != symbolTable.end()) {
+                throw std::runtime_error("Variable '" + varName + "' has already been declared");
+            }
+
             symbolTable[varName].first = stackOffset;
             if (i->expr()){
                 this -> visit(i->expr());
