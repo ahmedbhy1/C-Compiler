@@ -76,11 +76,9 @@ antlrcpp::Any CodeGenVisitor::visitReturn_stmt(ifccParser::Return_stmtContext *c
 
 antlrcpp::Any CodeGenVisitor::visitComp(ifccParser::CompContext *ctx){
     this->visit(ctx->expr(0));              // left → %eax
-    usedVariables.insert(ctx->expr(0)->getText());
     std::cout << "    movl %eax, %ecx\n";   // save to %ecx
 
     this->visit(ctx->expr(1));              // right → %eax
-    usedVariables.insert(ctx->expr(1)->getText());
 
     std::cout << "    cmpl %eax, %ecx\n";   // compare ecx (left) - eax (right)
 
@@ -96,6 +94,7 @@ antlrcpp::Any CodeGenVisitor::visitComp(ifccParser::CompContext *ctx){
     std::cout << "    movzbl %al, %eax\n";  // zero-extend bool to int
     return 0;
 }
+
 
 antlrcpp::Any CodeGenVisitor::visitUnary(ifccParser::UnaryContext *ctx){
     if (ctx->UNARY()){
@@ -218,12 +217,57 @@ antlrcpp::Any CodeGenVisitor::visitMul(ifccParser::MulContext *ctx){
     return 0;
 }
 
+
+antlrcpp::Any CodeGenVisitor::visitGetchar_expr(ifccParser::Getchar_exprContext *ctx) {
+    std::cout << "    call getchar\n";
+    return 0;
+}
+
+
 antlrcpp::Any CodeGenVisitor::visitConst(ifccParser::ConstContext *ctx){
     if (ctx->CONST()) {
         std::cout <<"    movl $" << ctx->CONST()->getText() << ", %eax" << std::endl;
-    }
+    } 
     return 0;
 }
+
+antlrcpp::Any CodeGenVisitor::visitPutchar_stmt(ifccParser::Putchar_stmtContext *ctx) {
+    this->visit(ctx->expr());     
+    std::cout << "    movl %eax, %edi\n";
+    std::cout << "    call putchar\n";
+    return 0;
+}
+
+antlrcpp::Any CodeGenVisitor::visitGetchar_stmt(ifccParser::Getchar_stmtContext *ctx) {
+    std::string varName = ctx->ID()->getText();
+
+    if (symbolTable.find(varName) == symbolTable.end()) {
+        throw std::runtime_error("Variable '" + varName + "' not declared");
+    }
+
+    int varOffset = symbolTable[varName].first;
+
+    std::cout << "    call getchar\n";                    // Result in %eax
+    std::cout << "    movl %eax, -" << varOffset << "(%rbp)\n";  // Store result in variable
+    return 0;
+}
+
+antlrcpp::Any CodeGenVisitor::visitBreak_stmt(ifccParser::Break_stmtContext *ctx) {
+    if (breakLabels.empty()) {
+        throw std::runtime_error("`break` used outside of a loop or switch.");
+    }
+    std::cout << "    jmp " << breakLabels.top() << "\n";
+    return 0;
+}
+
+antlrcpp::Any CodeGenVisitor::visitContinue_stmt(ifccParser::Continue_stmtContext *ctx) {
+    if (continueLabels.empty()) {
+        throw std::runtime_error("`continue` used outside of a loop.");
+    }
+    std::cout << "    jmp " << continueLabels.top() << "\n";
+    return 0;
+}
+
 
 antlrcpp::Any CodeGenVisitor::visitId(ifccParser::IdContext *ctx){
     if (ctx->ID()) {
