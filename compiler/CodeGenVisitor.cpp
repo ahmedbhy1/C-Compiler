@@ -36,7 +36,7 @@ antlrcpp::Any CodeGenVisitor::visitDecl_stmt(ifccParser::Decl_stmtContext *ctx) 
     std::vector<std::string> varNames;
 
     for (auto i : ctx->equalexpr_stmt()) {
-        // variable been declared
+        // variable been
         if (i->ID()){
             int localStackOffset = stackOffset;
             std::string varName = i->ID()->getText();
@@ -74,35 +74,26 @@ antlrcpp::Any CodeGenVisitor::visitReturn_stmt(ifccParser::Return_stmtContext *c
     return 0;
 }
 
-
 antlrcpp::Any CodeGenVisitor::visitComp(ifccParser::CompContext *ctx){
-    if (ctx->COMP()) {
-        this->visit(ctx->expr(0));
-        usedVariables.insert(ctx->expr(0)->getText());
-        std::string op = ctx->COMP()->getText();
-        std::cout << "    pushq %rax\n";
-        this->visit(ctx->expr(1));
-        usedVariables.insert(ctx->expr(1)->getText());
-        std::cout << "    movl %eax, %ebx\n";
-        std::cout << "    popq %rax\n";
-        std::cout << "    cmpl %ebx, %eax\n";
-        if (op == "==") {
-            std::cout << "    sete %al\n";
-        } else if (op == "!=") {
-            std::cout << "    setne %al\n";
-        } else if (op == "<") {
-            std::cout << "    setl %al\n";
-        } else if (op == "<=") {
-            std::cout << "    setle %al\n";
-        } else if (op == ">") {
-            std::cout << "    setg %al\n";
-        } else if (op == ">=") {
-            std::cout << "    setge %al\n";
-        } else {
-            throw std::runtime_error("Unsupported comparison operator: " + op);
-        }
-        std::cout << "    movzbl %al, %eax\n";
-    }
+    this->visit(ctx->expr(0));              // left → %eax
+    usedVariables.insert(ctx->expr(0)->getText());
+    std::cout << "    movl %eax, %ecx\n";   // save to %ecx
+
+    this->visit(ctx->expr(1));              // right → %eax
+    usedVariables.insert(ctx->expr(1)->getText());
+
+    std::cout << "    cmpl %eax, %ecx\n";   // compare ecx (left) - eax (right)
+
+    std::string op = ctx->COMP()->getText();
+    if (op == "==") std::cout << "    sete %al\n";
+    else if (op == "!=") std::cout << "    setne %al\n";
+    else if (op == "<") std::cout << "    setl %al\n";
+    else if (op == "<=") std::cout << "    setle %al\n";
+    else if (op == ">") std::cout << "    setg %al\n";
+    else if (op == ">=") std::cout << "    setge %al\n";
+    else throw std::runtime_error("Unsupported comparison operator: " + op);
+
+    std::cout << "    movzbl %al, %eax\n";  // zero-extend bool to int
     return 0;
 }
 
