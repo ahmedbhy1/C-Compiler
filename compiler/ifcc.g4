@@ -12,6 +12,11 @@ stmt : decl_stmt
      | putchar_stmt
      | getchar_stmt
      | break_stmt
+     | continue_stmt
+     ;
+
+continue_stmt
+    : 'continue' ';'
     ;
 
 break_stmt

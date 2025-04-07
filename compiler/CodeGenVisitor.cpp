@@ -333,4 +333,12 @@ antlrcpp::Any CodeGenVisitor::visitBreak_stmt(ifccParser::Break_stmtContext *ctx
     return 0;
 }
 
+antlrcpp::Any CodeGenVisitor::visitContinue_stmt(ifccParser::Continue_stmtContext *ctx) {
+    if (continueLabels.empty()) {
+        throw std::runtime_error("`continue` used outside of a loop.");
+    }
+    std::cout << "    jmp " << continueLabels.top() << "\n";
+    return 0;
+}
+
 
