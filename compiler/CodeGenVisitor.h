@@ -35,12 +35,14 @@ class  CodeGenVisitor : public ifccBaseVisitor {
         virtual antlrcpp::Any visitFunct(ifccParser::FunctContext *ctx);
         virtual antlrcpp::Any visitGetchar_expr(ifccParser::Getchar_exprContext *ctx);
         
+        
 private:
         std::map<std::string, std::pair<int,int>> symbolTable;
+        std::unordered_set<std::string> usedVariables;
         int stackOffset = 0;
         int tempCounter = 0;
         std::string newTemp() {
-            return "temp_" + std::to_string(tempCounter++);
+                return "#temp_" + std::to_string(tempCounter++);
         }
         std::stack<std::string> breakLabels; 
         std::stack<std::string> continueLabels;
