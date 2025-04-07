@@ -24,6 +24,11 @@ antlrcpp::Any CodeGenVisitor::visitProg(ifccParser::ProgContext *ctx) {
     std::cout << "    popq %rbp\n";
     std::cout << "    ret\n";
 
+    for (const auto& var : symbolTable) {
+        if (usedVariables.find(var.first) == usedVariables.end() && var.first[0] != '#') {
+            std::cout <<"#Variable '" + var.first + "' declared but never used\n";
+        } 
+    }
     return 0;
 }
 
@@ -67,9 +72,11 @@ antlrcpp::Any CodeGenVisitor::visitReturn_stmt(ifccParser::Return_stmtContext *c
 antlrcpp::Any CodeGenVisitor::visitComp(ifccParser::CompContext *ctx){
     if (ctx->COMP()) {
         this->visit(ctx->expr(0));
+        usedVariables.insert(ctx->expr(0)->getText());
         std::string op = ctx->COMP()->getText();
         std::cout << "    pushq %rax\n";
         this->visit(ctx->expr(1));
+        usedVariables.insert(ctx->expr(1)->getText());
         std::cout << "    movl %eax, %ebx\n";
         std::cout << "    popq %rax\n";
         std::cout << "    cmpl %ebx, %eax\n";
@@ -111,11 +118,13 @@ antlrcpp::Any CodeGenVisitor::visitUnary(ifccParser::UnaryContext *ctx){
 antlrcpp::Any CodeGenVisitor::visitAnd(ifccParser::AndContext *ctx){
     if (ctx->AND()) {
         this->visit(ctx->expr(0));
+        usedVariables.insert(ctx->expr(0)->getText());
         std::string temp = newTemp();
         symbolTable[temp].first = stackOffset;
         std::cout << "    movl %eax, -" << stackOffset << "(%rbp)" << std::endl;
         stackOffset+=4;
         this->visit(ctx->expr(1));
+        usedVariables.insert(ctx->expr(1)->getText());
         int varStackOffset = symbolTable[temp].first;
         std::cout << "    and -" << varStackOffset << "(%rbp), %eax" << std::endl;
     }
@@ -125,11 +134,13 @@ antlrcpp::Any CodeGenVisitor::visitAnd(ifccParser::AndContext *ctx){
 antlrcpp::Any CodeGenVisitor::visitOr(ifccParser::OrContext *ctx){
     if (ctx->OR()) {
         this->visit(ctx->expr(0));
+        usedVariables.insert(ctx->expr(0)->getText());
         std::string temp = newTemp();
         symbolTable[temp].first = stackOffset;
         std::cout << "    movl %eax, -" << stackOffset << "(%rbp)" << std::endl;
         stackOffset+=4;
         this->visit(ctx->expr(1));
+        usedVariables.insert(ctx->expr(1)->getText());
         int varStackOffset = symbolTable[temp].first;
         std::cout << "    or -" << varStackOffset << "(%rbp), %eax" << std::endl;
     }
@@ -139,11 +150,13 @@ antlrcpp::Any CodeGenVisitor::visitOr(ifccParser::OrContext *ctx){
 antlrcpp::Any CodeGenVisitor::visitXor(ifccParser::XorContext *ctx){
     if (ctx->XOR()){
         this->visit(ctx->expr(0));
+        usedVariables.insert(ctx->expr(0)->getText());
         std::string temp = newTemp();
         symbolTable[temp].first = stackOffset;
         std::cout << "    movl %eax, -" << stackOffset << "(%rbp)" << std::endl;
         stackOffset+=4;
         this->visit(ctx->expr(1));    
+        usedVariables.insert(ctx->expr(1)->getText());
         int varStackOffset = symbolTable[temp].first;
         std::cout << "    xor -" << varStackOffset << "(%rbp), %eax" << std::endl;
     }
@@ -153,11 +166,13 @@ antlrcpp::Any CodeGenVisitor::visitXor(ifccParser::XorContext *ctx){
 antlrcpp::Any CodeGenVisitor::visitPlus(ifccParser::PlusContext *ctx){
     if (ctx->OPA()) {
         this->visit(ctx->expr(0));
+        usedVariables.insert(ctx->expr(0)->getText());
         std::string temp = newTemp();
         symbolTable[temp].first = stackOffset;
         std::cout << "    movl %eax, -" << stackOffset << "(%rbp)" << std::endl;
         stackOffset+=4;
         this->visit(ctx->expr(1));
+        usedVariables.insert(ctx->expr(1)->getText());
         if (ctx->OPA()->getText() == "+") {
             int varStackOffset = symbolTable[temp].first;
             std::cout << "    addl -" << varStackOffset << "(%rbp), %eax" << std::endl;
@@ -177,11 +192,13 @@ antlrcpp::Any CodeGenVisitor::visitExpr(ifccParser::ExprContext *ctx){
 antlrcpp::Any CodeGenVisitor::visitMul(ifccParser::MulContext *ctx){
     if (ctx->OPM()) {
         this->visit(ctx->expr(0));
+        usedVariables.insert(ctx->expr(0)->getText());
         std::string temp = newTemp();
         symbolTable[temp].first = stackOffset;
         std::cout << "    movl %eax, -" << stackOffset << "(%rbp)" << std::endl;
         stackOffset+=4;
         this->visit(ctx->expr(1));
+        usedVariables.insert(ctx->expr(1)->getText());
         if (ctx->OPM()->getText() == "*") {
             int varStackOffset = symbolTable[temp].first;
             std::cout <<"    imull -" << varStackOffset << "(%rbp), %eax"<<std::endl; // %eax = %eax * temp
@@ -216,6 +233,7 @@ antlrcpp::Any CodeGenVisitor::visitId(ifccParser::IdContext *ctx){
         int variableSymbol = symbolTable[ctx->ID()->getText()].first;
         std::cout<<"    movl -" << variableSymbol << "(%rbp), %eax"<<std::endl;
     }
+    usedVariables.insert(ctx->ID()->getText());
     return 0;
 }
 
