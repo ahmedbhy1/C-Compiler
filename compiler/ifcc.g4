@@ -9,12 +9,22 @@ prog : 'int' ID '(' ')' '{' stmt* '}'
 stmt : decl_stmt
      | assign_stmt
      | return_stmt
+     | putchar_stmt
+     | getchar_stmt
+     | break_stmt
+     | continue_stmt
      ;
 
+
+continue_stmt : 'continue' ';' ;
+break_stmt : 'break' ';' ;
+getchar_stmt : 'getchar' '(' ID ')' ';' ;
+putchar_stmt : 'putchar' '(' expr ')' ';' ;
 decl_stmt : 'int' equalexpr_stmt (',' equalexpr_stmt )* ';' | 'char' equalexpr_stmt (',' equalexpr_stmt )* ';';
 equalexpr_stmt : ID ('=' expr)? ;
 assign_stmt : ID '=' expr ';' ;
 return_stmt : RETURN expr ';' ;
+
 
 expr : UNARY expr # unary
      | OPA expr # moin
@@ -28,6 +38,7 @@ expr : UNARY expr # unary
      | ID OPENPARENT CLOSEPARENT # funct
      | ID # id
      | OPENPARENT expr CLOSEPARENT # parent
+     |'getchar' '(' ')' # getchar_expr
      ;
 
 RETURN : 'return' ;
