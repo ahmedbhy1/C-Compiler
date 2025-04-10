@@ -29,7 +29,7 @@ public:
     virtual antlrcpp::Any visitFunct(ifccParser::FunctContext *ctx);
 
     // Add the visitBlock function
-    virtual antlrcpp::Any visitBlock(ifccParser::BlockContext *ctx);
+    virtual antlrcpp::Any visitBlock(ifccParser::BlockContext *ctx) override;
 
     // Declare the visitExpr function (no override)
     virtual antlrcpp::Any visitExpr(ifccParser::ExprContext *ctx);

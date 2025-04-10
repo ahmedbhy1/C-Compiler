@@ -1,4 +1,4 @@
-build/ifccVisitor.o: generated/ifccVisitor.cpp generated/ifccVisitor.h \
+build/ifccVisitor.o: ifccVisitor.cpp ifccVisitor.h \
  /usr/include/antlr4-runtime/antlr4-runtime.h \
  /usr/include/antlr4-runtime/antlr4-common.h \
  /usr/include/antlr4-runtime/support/guid.h \
@@ -155,4 +155,4 @@ build/ifccVisitor.o: generated/ifccVisitor.cpp generated/ifccVisitor.h \
  /usr/include/antlr4-runtime/tree/xpath/XPathTokenElement.h \
  /usr/include/antlr4-runtime/tree/xpath/XPathWildcardAnywhereElement.h \
  /usr/include/antlr4-runtime/tree/xpath/XPathWildcardElement.h \
- generated/ifccParser.h
+ ifccParser.h

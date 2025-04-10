@@ -10,7 +10,7 @@ main:
     movq %rbp, %rsp
     popq %rbp
     ret
-    movl -0(%rbp), %eax
+    movl -4(%rbp), %eax
     movq %rbp, %rsp
     popq %rbp
     ret

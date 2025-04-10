@@ -81,24 +81,29 @@ antlrcpp::Any CodeGenVisitor::visitReturn_stmt(ifccParser::Return_stmtContext *c
     return 0;
 }
 
-
 antlrcpp::Any CodeGenVisitor::visitBlock(ifccParser::BlockContext *ctx) {
-    symbols.enterScope();  // Enter a new scope for the block
+    symbols.enterScope();
+    std::vector<std::string> varsDeclaredHere;
 
     for (auto stmt : ctx->stmt()) {
+        if (auto decl = dynamic_cast<ifccParser::Decl_stmtContext*>(stmt)) {
+            for (auto eq : decl->equalexpr_stmt()) {
+                std::string varName = eq->ID()->getText();
+                varsDeclaredHere.push_back(varName);
+            }
+        }
         this->visit(stmt);
     }
 
-    // Ensure we clean up the stack offsets of variables declared in this block
-    for (auto& entry : stackOffsets) {
-        if (!entry.second.empty()) {
-            entry.second.pop();  // Remove the top of the stack after block ends
-        }
+    for (const auto& var : varsDeclaredHere) {
+        stackOffsets[var].pop();
+        symbols.removeStackOffset(var);
     }
 
-    symbols.exitScope();  // Exit the current scope after block execution
+    symbols.exitScope();
     return 0;
 }
+
 
 antlrcpp::Any CodeGenVisitor::visitComp(ifccParser::CompContext *ctx) {
     if (ctx->COMP()) {
