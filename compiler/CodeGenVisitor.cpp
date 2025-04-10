@@ -11,6 +11,9 @@ antlrcpp::Any CodeGenVisitor::visitProgs(ifccParser::ProgsContext *ctx) {
 
 antlrcpp::Any CodeGenVisitor::visitProg(ifccParser::ProgContext *ctx) {
     std::string name = ctx->ID()->getText();
+    std::string returnLabel = "end_" + name; // Unique label for function return
+    currentReturnLabel = returnLabel;        // Save it for return_stmt
+
     std::cout << name << ":\n";
     std::cout << "    pushq %rbp\n";
     std::cout << "    movq %rsp, %rbp\n";
@@ -23,6 +26,8 @@ antlrcpp::Any CodeGenVisitor::visitProg(ifccParser::ProgContext *ctx) {
 
     symbols.exitScope();  // Exit the current scope for the program
 
+    // Define the return label
+    std::cout << returnLabel << ":\n";
     std::cout << "    movq %rbp, %rsp\n";
     std::cout << "    popq %rbp\n";
     std::cout << "    ret\n";
@@ -65,21 +70,21 @@ antlrcpp::Any CodeGenVisitor::visitAssign_stmt(ifccParser::Assign_stmtContext *c
     return 0;
 }
 
-// antlrcpp::Any CodeGenVisitor::visitReturn_stmt(ifccParser::Return_stmtContext *ctx) {
-//     this->visit(ctx->expr());
-//     std::cout << "    ret\n";  // Return from function
-//     return 0;
-// }
-
 antlrcpp::Any CodeGenVisitor::visitReturn_stmt(ifccParser::Return_stmtContext *ctx) {
-    this->visit(ctx->expr());
-
-    std::cout << "    movq %rbp, %rsp\n";
-    std::cout << "    popq %rbp\n";
-    std::cout << "    ret\n";
-
+    this->visit(ctx->expr()); // result in %eax
+    std::cout << "    jmp " << currentReturnLabel << "\n"; // jump to final cleanup
     return 0;
 }
+
+// antlrcpp::Any CodeGenVisitor::visitReturn_stmt(ifccParser::Return_stmtContext *ctx) {
+//     this->visit(ctx->expr());
+
+//     std::cout << "    movq %rbp, %rsp\n";
+//     std::cout << "    popq %rbp\n";
+//     std::cout << "    ret\n";
+
+//     return 0;
+//}
 
 antlrcpp::Any CodeGenVisitor::visitBlock(ifccParser::BlockContext *ctx) {
     symbols.enterScope();

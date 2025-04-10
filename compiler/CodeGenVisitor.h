@@ -39,6 +39,7 @@ private:
     std::map<std::string, std::stack<int>> stackOffsets;  // Stack offsets to track variable positions
     int stackOffset = 0;
     int tempCounter = 0;
+    std::string currentReturnLabel;
 
     std::string newTemp() {
         return "temp_" + std::to_string(tempCounter++);
