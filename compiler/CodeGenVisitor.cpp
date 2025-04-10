@@ -15,18 +15,13 @@ antlrcpp::Any CodeGenVisitor::visitProg(ifccParser::ProgContext *ctx) {
     std::cout << "    pushq %rbp\n";
     std::cout << "    movq %rsp, %rbp\n";
 
-    symbols.enterScope();
+    symbols.enterScope();  // Enter a new scope for the program
 
     for (auto stmt : ctx->stmt()) {
         this->visit(stmt);
     }
 
-    for (auto& entry : stackOffsets) {
-        if (!entry.second.empty()) {
-            entry.second.pop(); 
-        }
-    }
-    symbols.exitScope();
+    symbols.exitScope();  // Exit the current scope for the program
 
     std::cout << "    movq %rbp, %rsp\n";
     std::cout << "    popq %rbp\n";
@@ -35,24 +30,21 @@ antlrcpp::Any CodeGenVisitor::visitProg(ifccParser::ProgContext *ctx) {
     return 0;
 }
 
-
 antlrcpp::Any CodeGenVisitor::visitDecl_stmt(ifccParser::Decl_stmtContext *ctx) {
+    std::vector<std::string> varNames;
+
     for (auto i : ctx->equalexpr_stmt()) {
         if (i->ID()) {
+            int localStackOffset = stackOffset;
             std::string varName = i->ID()->getText();
-
-            if (!symbols.declare(varName, "int")) {
-                throw std::runtime_error("Variable '" + varName + "' already declared in this scope.");
-            }
-
-            stackOffsets[varName].push(stackOffset);
+            symbols.declare(varName, "int");  // Declare variable in the symbol table
+            stackOffsets[varName].push(stackOffset);  // Track stack offset for variable
+            stackOffset += 4;  // Move the stack offset for an int variable
 
             if (i->expr()) {
                 this->visit(i->expr());
-                std::cout << "    movl %eax, -" << stackOffset << "(%rbp)\n";
+                std::cout << "    movl %eax , -" << localStackOffset << "(%rbp) \n";
             }
-
-            stackOffset += 4;
         }
     }
     return 0;
@@ -61,21 +53,50 @@ antlrcpp::Any CodeGenVisitor::visitDecl_stmt(ifccParser::Decl_stmtContext *ctx) 
 antlrcpp::Any CodeGenVisitor::visitAssign_stmt(ifccParser::Assign_stmtContext *ctx) {
     std::string varName = ctx->ID()->getText();
 
-    if (symbols.lookup(varName) == "") {
+    // Check if the variable is declared in the symbol table
+    if (symbols.lookup(varName).empty()) {
         throw std::runtime_error("Variable '" + varName + "' not declared");
     }
 
+    // Get the stack offset for the variable
     int varOffset = stackOffsets[varName].top();
     this->visit(ctx->expr());
-    std::cout << "    movl %eax, -" << varOffset << "(%rbp)\n";
+    std::cout << "    movl %eax, -" << varOffset << "(%rbp)\n";  // Store the value in the correct offset
     return 0;
 }
 
+// antlrcpp::Any CodeGenVisitor::visitReturn_stmt(ifccParser::Return_stmtContext *ctx) {
+//     this->visit(ctx->expr());
+//     std::cout << "    ret\n";  // Return from function
+//     return 0;
+// }
+
 antlrcpp::Any CodeGenVisitor::visitReturn_stmt(ifccParser::Return_stmtContext *ctx) {
     this->visit(ctx->expr());
+
     std::cout << "    movq %rbp, %rsp\n";
     std::cout << "    popq %rbp\n";
     std::cout << "    ret\n";
+
+    return 0;
+}
+
+
+antlrcpp::Any CodeGenVisitor::visitBlock(ifccParser::BlockContext *ctx) {
+    symbols.enterScope();  // Enter a new scope for the block
+
+    for (auto stmt : ctx->stmt()) {
+        this->visit(stmt);
+    }
+
+    // Ensure we clean up the stack offsets of variables declared in this block
+    for (auto& entry : stackOffsets) {
+        if (!entry.second.empty()) {
+            entry.second.pop();  // Remove the top of the stack after block ends
+        }
+    }
+
+    symbols.exitScope();  // Exit the current scope after block execution
     return 0;
 }
 
@@ -88,13 +109,21 @@ antlrcpp::Any CodeGenVisitor::visitComp(ifccParser::CompContext *ctx) {
         std::cout << "    movl %eax, %ebx\n";
         std::cout << "    popq %rax\n";
         std::cout << "    cmpl %ebx, %eax\n";
-        if (op == "==") std::cout << "    sete %al\n";
-        else if (op == "!=") std::cout << "    setne %al\n";
-        else if (op == "<") std::cout << "    setl %al\n";
-        else if (op == "<=") std::cout << "    setle %al\n";
-        else if (op == ">") std::cout << "    setg %al\n";
-        else if (op == ">=") std::cout << "    setge %al\n";
-        else throw std::runtime_error("Unsupported comparison: " + op);
+        if (op == "==") {
+            std::cout << "    sete %al\n";
+        } else if (op == "!=") {
+            std::cout << "    setne %al\n";
+        } else if (op == "<") {
+            std::cout << "    setl %al\n";
+        } else if (op == "<=") {
+            std::cout << "    setle %al\n";
+        } else if (op == ">") {
+            std::cout << "    setg %al\n";
+        } else if (op == ">=") {
+            std::cout << "    setge %al\n";
+        } else {
+            throw std::runtime_error("Unsupported comparison operator: " + op);
+        }
         std::cout << "    movzbl %al, %eax\n";
     }
     return 0;
@@ -103,13 +132,13 @@ antlrcpp::Any CodeGenVisitor::visitComp(ifccParser::CompContext *ctx) {
 antlrcpp::Any CodeGenVisitor::visitUnary(ifccParser::UnaryContext *ctx) {
     if (ctx->UNARY()) {
         std::string op = ctx->UNARY()->getText();
-        this->visit(ctx->expr());
+        visit(ctx->expr());
         if (op == "!") {
-            std::cout << "    cmpl $0, %eax\n";
-            std::cout << "    sete %al\n";
-            std::cout << "    movzbl %al, %eax\n";
+            std::cout << "    cmpl $0, %eax\n"; // Compare %eax with 0
+            std::cout << "    sete %al\n";      // Set %al to 1 if %eax == 0, else 0
+            std::cout << "    movzbl %al, %eax\n"; // Zero-extend %al to %eax
         } else {
-            throw std::runtime_error("Unsupported unary op: " + op);
+            throw std::runtime_error("Unsupported unary operator: " + op);
         }
     }
     return 0;
@@ -119,13 +148,13 @@ antlrcpp::Any CodeGenVisitor::visitAnd(ifccParser::AndContext *ctx) {
     if (ctx->AND()) {
         this->visit(ctx->expr(0));
         std::string temp = newTemp();
+        symbols.declare(temp, "int");
         stackOffsets[temp].push(stackOffset);
-        std::cout << "    movl %eax, -" << stackOffset << "(%rbp)\n";
+        std::cout << "    movl %eax, -" << stackOffset << "(%rbp)" << std::endl;
         stackOffset += 4;
         this->visit(ctx->expr(1));
-        int offset = stackOffsets[temp].top();
-        std::cout << "    and -" << offset << "(%rbp), %eax\n";
-        stackOffsets[temp].pop();
+        int varStackOffset = stackOffsets[temp].top();
+        std::cout << "    and -" << varStackOffset << "(%rbp), %eax" << std::endl;
     }
     return 0;
 }
@@ -134,13 +163,13 @@ antlrcpp::Any CodeGenVisitor::visitOr(ifccParser::OrContext *ctx) {
     if (ctx->OR()) {
         this->visit(ctx->expr(0));
         std::string temp = newTemp();
+        symbols.declare(temp, "int");
         stackOffsets[temp].push(stackOffset);
-        std::cout << "    movl %eax, -" << stackOffset << "(%rbp)\n";
+        std::cout << "    movl %eax, -" << stackOffset << "(%rbp)" << std::endl;
         stackOffset += 4;
         this->visit(ctx->expr(1));
-        int offset = stackOffsets[temp].top();
-        std::cout << "    or -" << offset << "(%rbp), %eax\n";
-        stackOffsets[temp].pop();
+        int varStackOffset = stackOffsets[temp].top();
+        std::cout << "    or -" << varStackOffset << "(%rbp), %eax" << std::endl;
     }
     return 0;
 }
@@ -149,13 +178,13 @@ antlrcpp::Any CodeGenVisitor::visitXor(ifccParser::XorContext *ctx) {
     if (ctx->XOR()) {
         this->visit(ctx->expr(0));
         std::string temp = newTemp();
+        symbols.declare(temp, "int");
         stackOffsets[temp].push(stackOffset);
-        std::cout << "    movl %eax, -" << stackOffset << "(%rbp)\n";
+        std::cout << "    movl %eax, -" << stackOffset << "(%rbp)" << std::endl;
         stackOffset += 4;
         this->visit(ctx->expr(1));
-        int offset = stackOffsets[temp].top();
-        std::cout << "    xor -" << offset << "(%rbp), %eax\n";
-        stackOffsets[temp].pop();
+        int varStackOffset = stackOffsets[temp].top();
+        std::cout << "    xor -" << varStackOffset << "(%rbp), %eax" << std::endl;
     }
     return 0;
 }
@@ -164,72 +193,79 @@ antlrcpp::Any CodeGenVisitor::visitPlus(ifccParser::PlusContext *ctx) {
     if (ctx->OPA()) {
         this->visit(ctx->expr(0));
         std::string temp = newTemp();
+        symbols.declare(temp, "int");
         stackOffsets[temp].push(stackOffset);
-        std::cout << "    movl %eax, -" << stackOffset << "(%rbp)\n";
+        std::cout << "    movl %eax, -" << stackOffset << "(%rbp)" << std::endl;
         stackOffset += 4;
         this->visit(ctx->expr(1));
-        int offset = stackOffsets[temp].top();
         if (ctx->OPA()->getText() == "+") {
-            std::cout << "    addl -" << offset << "(%rbp), %eax\n";
-        } else {
-            std::cout << "    subl %eax, -" << offset << "(%rbp)\n";
-            std::cout << "    movl -" << offset << "(%rbp), %eax\n";
+            int varStackOffset = stackOffsets[temp].top();
+            std::cout << "    addl -" << varStackOffset << "(%rbp), %eax" << std::endl;
+        } else if (ctx->OPA()->getText() == "-") {
+            int varStackOffset = stackOffsets[temp].top();
+            std::cout << "    subl %eax, -" << varStackOffset << "(%rbp)" << std::endl;
+            std::cout << "    movl  -" << varStackOffset << "(%rbp), %eax" << std::endl;
         }
-        stackOffsets[temp].pop();
     }
     return 0;
 }
+
+antlrcpp::Any CodeGenVisitor::visitExpr(ifccParser::ExprContext *ctx) {
+    std::cout << "Visiting expression\n";
+    return nullptr;  
+}
+
 
 antlrcpp::Any CodeGenVisitor::visitMul(ifccParser::MulContext *ctx) {
     if (ctx->OPM()) {
         this->visit(ctx->expr(0));
         std::string temp = newTemp();
+        symbols.declare(temp, "int");
         stackOffsets[temp].push(stackOffset);
-        std::cout << "    movl %eax, -" << stackOffset << "(%rbp)\n";
+        std::cout << "    movl %eax, -" << stackOffset << "(%rbp)" << std::endl;
         stackOffset += 4;
         this->visit(ctx->expr(1));
-        int offset = stackOffsets[temp].top();
-        std::string op = ctx->OPM()->getText();
-        if (op == "*") {
-            std::cout << "    imull -" << offset << "(%rbp), %eax\n";
-        } else if (op == "/") {
-            std::cout << "    movl %eax, %ecx\n";
-            std::cout << "    movl -" << offset << "(%rbp), %eax\n";
-            std::cout << "    cltd\n";
-            std::cout << "    idivl %ecx\n";
-        } else if (op == "%") {
-            std::cout << "    movl %eax, %ecx\n";
-            std::cout << "    movl -" << offset << "(%rbp), %eax\n";
-            std::cout << "    cltd\n";
-            std::cout << "    idivl %ecx\n";
-            std::cout << "    movl %edx, %eax\n";
+        if (ctx->OPM()->getText() == "*") {
+            int varStackOffset = stackOffsets[temp].top();
+            std::cout << "    imull -" << varStackOffset << "(%rbp), %eax" << std::endl;
+        } else if (ctx->OPM()->getText() == "/") {
+            int varStackOffset = stackOffsets[temp].top();
+            std::cout << "    movl %eax, %ecx" << std::endl;
+            std::cout << "    movl -" << varStackOffset << "(%rbp), %eax" << std::endl;
+            std::cout << "    cltd" << std::endl;
+            std::cout << "    idivl %ecx" << std::endl;
+        } else if (ctx->OPM()->getText() == "%") {
+            int varStackOffset = stackOffsets[temp].top();
+            std::cout << "    movl %eax, %ecx" << std::endl;
+            std::cout << "    movl -" << varStackOffset << "(%rbp), %eax" << std::endl;
+            std::cout << "    cltd" << std::endl;
+            std::cout << "    idivl %ecx" << std::endl;
+            std::cout << "   movl %edx, %eax" << std::endl;
         }
-        stackOffsets[temp].pop();
     }
     return 0;
 }
 
 antlrcpp::Any CodeGenVisitor::visitConst(ifccParser::ConstContext *ctx) {
     if (ctx->CONST()) {
-        std::cout << "    movl $" << ctx->CONST()->getText() << ", %eax\n";
+        std::cout << "    movl $" << ctx->CONST()->getText() << ", %eax" << std::endl;
     }
     return 0;
 }
 
 antlrcpp::Any CodeGenVisitor::visitId(ifccParser::IdContext *ctx) {
-    std::string varName = ctx->ID()->getText();
-
-    if (symbols.lookup(varName) == "") {
-        throw std::runtime_error("Variable '" + varName + "' not declared");
+    if (ctx->ID()) {
+        int variableSymbol = stackOffsets[ctx->ID()->getText()].top();
+        std::cout << "    movl -" << variableSymbol << "(%rbp), %eax" << std::endl;
     }
-
-    int offset = stackOffsets[varName].top();
-    std::cout << "    movl -" << offset << "(%rbp), %eax\n";
     return 0;
 }
 
 antlrcpp::Any CodeGenVisitor::visitParent(ifccParser::ParentContext *ctx) {
-    return this->visit(ctx->expr());
+    if (ctx->expr()) {
+        this->visit(ctx->expr());
+    }
+    return 0;
 }
 
 antlrcpp::Any CodeGenVisitor::visitMoin(ifccParser::MoinContext *ctx) {
@@ -242,8 +278,8 @@ antlrcpp::Any CodeGenVisitor::visitMoin(ifccParser::MoinContext *ctx) {
 
 antlrcpp::Any CodeGenVisitor::visitFunct(ifccParser::FunctContext *ctx) {
     if (ctx->ID() && ctx->OPENPARENT() && ctx->CLOSEPARENT()) {
-        std::string fnName = ctx->ID()->getText();
-        std::cout << "    call " << fnName << "\n";
+        std::string functionName = ctx->ID()->getText();
+        std::cout << "    call " << functionName << "\n";
     }
     return 0;
 }

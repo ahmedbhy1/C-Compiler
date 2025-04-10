@@ -6,9 +6,10 @@ progs : prog* ;
 prog : 'int' ID '(' ')' '{' stmt* '}'
      | 'void' ID '(' ')' '{' stmt* '}';
 
-stmt : decl_stmt
-     | assign_stmt
-     | return_stmt
+stmt : decl_stmt           #decl
+     | assign_stmt         #assign
+     | return_stmt         #ret
+     | '{' stmt* '}'       #block
      ;
 
 decl_stmt : 'int' equalexpr_stmt (',' equalexpr_stmt )* ';' | 'char' equalexpr_stmt (',' equalexpr_stmt )* ';';

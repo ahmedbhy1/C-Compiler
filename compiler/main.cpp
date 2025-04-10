@@ -8,6 +8,7 @@
 #include "generated/ifccParser.h"
 #include "generated/ifccBaseVisitor.h"
 
+#include "SymbolTable.h"
 #include "CodeGenVisitor.h"
 
 using namespace antlr4;
