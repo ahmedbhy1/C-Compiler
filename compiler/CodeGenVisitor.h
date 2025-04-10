@@ -7,7 +7,8 @@
 #include <map>
 #include <variant>
 #include <string>
-
+#include "IR.h"
+#include "IRBuilder.h"
 
 class  CodeGenVisitor : public ifccBaseVisitor {
 	public:
@@ -34,9 +35,11 @@ class  CodeGenVisitor : public ifccBaseVisitor {
         virtual antlrcpp::Any visitExpr(ifccParser::ExprContext *ctx);
         virtual antlrcpp::Any visitFunct(ifccParser::FunctContext *ctx);
         virtual antlrcpp::Any visitGetchar_expr(ifccParser::Getchar_exprContext *ctx);
+        virtual antlrcpp::Any visitIf_stmt(ifccParser::If_stmtContext *ctx);
         
         
 private:
+        IRBuilder builder;
         std::map<std::string, std::pair<int,int>> symbolTable;
         std::unordered_set<std::string> usedVariables;
         int stackOffset = 0;
