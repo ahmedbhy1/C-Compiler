@@ -1,10 +1,12 @@
 grammar ifcc;
 
-axiom : progs EOF ;
+axiom : progs ;
 
-progs : prog* ;
-prog : 'int' ID '(' ')' '{' stmt* '}'
-     | 'void' ID '(' ')' '{' stmt* '}';
+
+progs: def_func+;
+
+def_func: TYPE ID '(' param_list? ')' '{' stmt* '}';
+
 
 stmt : decl_stmt
      | assign_stmt
@@ -14,6 +16,7 @@ stmt : decl_stmt
      | break_stmt
      | continue_stmt
      | if_stmt
+     | block
      ;
 
 if_stmt : 'if' '(' expr ')' '{' stmt* '}' else_stmt? ;
@@ -26,7 +29,7 @@ decl_stmt : 'int' equalexpr_stmt (',' equalexpr_stmt )* ';' | 'char' equalexpr_s
 equalexpr_stmt : ID ('=' expr)? ;
 assign_stmt : ID '=' expr ';' ;
 return_stmt : RETURN expr ';' ;
-
+block: '{' stmt* '}';
 
 expr : UNARY expr # unary
      | OPA expr # moin

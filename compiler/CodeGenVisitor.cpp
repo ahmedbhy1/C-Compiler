@@ -295,43 +295,6 @@ antlrcpp::Any CodeGenVisitor::visitFunct(ifccParser::FunctContext *ctx){
 
 antlrcpp::Any CodeGenVisitor::visitIf_stmt(ifccParser::If_stmtContext *ctx) {
     // Generate unique block names
-    
-    std::string label_if_true = "if_true_" + builder.generateTemp();
-    std::string label_if_end = "if_end_" + builder.generateTemp();
-    std::string label_else = "if_else_" + builder.generateTemp();
-
-    // Create all basic blocks upfront
-    BasicBlock *trueBlock = builder.createBlock(label_if_true);
-    BasicBlock *elseBlock = builder.createBlock(label_else);
-    BasicBlock *endBlock = builder.createBlock(label_if_end);
-
-    this->visit(ctx->expr());
-    // Generate code for the condition expression
-    Value* condition = new Value("comp");
-
-    // Emit the conditional branch in the CURRENT block
-    builder.emitIfElse(condition, trueBlock, elseBlock);
-    
-    // --- Process TRUE block ---
-    builder.setCurrentBlock(trueBlock);
-    std::cout<< trueBlock->name << std::endl;
-    for (auto stmt : ctx->stmt()) {  // Process all statements in if body
-        visit(stmt);
-    }
-
-    builder.emitJump(endBlock);
-
-    // --- Process ELSE block (if it exists) ---
-    builder.setCurrentBlock(elseBlock);
-    std::cout<< elseBlock->name << std::endl;
-    if (ctx->else_stmt()) {
-        for (auto stmt : ctx->else_stmt()->stmt()) {
-            //std::cout<<"are we in True?"<<std::endl;
-            visit(stmt);
-        }
-    }
-    std::cout<< endBlock->name << std::endl;
-    builder.emitJump(endBlock);
 
     return 0;
 }
