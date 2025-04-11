@@ -8,7 +8,6 @@
 #include <variant>
 #include <string>
 #include "IR.h"
-#include "IRBuilder.h"
 
 class  CodeGenVisitor : public ifccBaseVisitor {
 	public:
@@ -39,7 +38,8 @@ class  CodeGenVisitor : public ifccBaseVisitor {
         
         
 private:
-        IRBuilder builder;
+        CFG* currentCFG;
+        BasicBlock* currentBB;
         std::map<std::string, std::pair<int,int>> symbolTable;
         std::unordered_set<std::string> usedVariables;
         int stackOffset = 0;

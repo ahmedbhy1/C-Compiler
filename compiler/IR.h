@@ -154,6 +154,7 @@ class CFG {
 	std::string create_new_tempvar(Type t);
 	int get_var_inde(std::string name);
 	Type get_var_type(std::string name);
+  int CFG::get_var_index(std::string name);
 
 	// basic block management
 	std::string new_BB_name();
