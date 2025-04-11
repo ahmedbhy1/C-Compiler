@@ -203,6 +203,11 @@ void CFG::gen_asm(std::ostream& o) {
     gen_asm_epilogue(o);
 }
 
+BasicBlock* CFG::get_current_bb(){
+	return current_bb;
+}
+
+
 // IR implementation
 void IR::AddCFG(CFG * newCFG) {
     allCFG.push_back(newCFG);

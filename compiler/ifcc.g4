@@ -30,6 +30,8 @@ equalexpr_stmt : ID ('=' expr)? ;
 assign_stmt : ID '=' expr ';' ;
 return_stmt : RETURN expr ';' ;
 block: '{' stmt* '}';
+param_list: param (',' param)*;
+param: TYPE ID;
 
 expr : UNARY expr # unary
      | OPA expr # moin

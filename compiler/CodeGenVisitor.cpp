@@ -268,7 +268,7 @@ antlrcpp::Any CodeGenVisitor::visitIf_stmt(ifccParser::If_stmtContext *ctx) {
     currentBB->add_IRInstr(IRInstr::jmp, INT32_T, {endLabel});
     
     // False branch (if exists)
-    if (ctx->ELSE()) {
+    if (ctx->else_stmt()) {
         BasicBlock* falseBB = new BasicBlock(currentCFG, falseLabel);
         currentCFG->add_bb(falseBB);
         currentBB = falseBB;

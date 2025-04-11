@@ -18,7 +18,7 @@ class DefFonction;
 
 
 typedef enum {
-    integer,
+    INT32_T,
     string
 }   Type;
 
@@ -33,6 +33,7 @@ class IRInstr {
         sub,
         mul,
         div,
+        mod,
         orB,
         andB,
         xorB,
@@ -56,7 +57,11 @@ class IRInstr {
         cmp_l,
         cmp_le,
         ret,
-        jmp
+        jmp,
+        call_getchar,
+        call_putchar,
+        prologue
+
     } Operation;
 
 
@@ -151,6 +156,7 @@ class CFG {
 
 	// symbol table methods
 	void add_to_symbol_table(std::string name, Type t);
+  BasicBlock* get_current_bb();
 	std::string create_new_tempvar(Type t);
 	int get_var_inde(std::string name);
 	Type get_var_type(std::string name);
@@ -193,4 +199,37 @@ class IR {
     std::vector<CFG *> allCFG;
   };
 
-#endif
+
+class DefFonction {
+  public:
+      DefFonction(const std::string& name) : name(name) {}
+      
+      // Get the function name
+      std::string getName() const { return name; }
+      
+      // Set the function name
+      void setName(const std::string& newName) { name = newName; }
+      
+      // Add a parameter to the function
+      void addParameter(const std::string& paramName, Type paramType) {
+          parameters.push_back({paramName, paramType});
+      }
+      
+      // Get all parameters
+      const std::vector<std::pair<std::string, Type>>& getParameters() const {
+          return parameters;
+      }
+      
+      // Get return type
+      Type getReturnType() const { return returnType; }
+      
+      // Set return type
+      void setReturnType(Type type) { returnType = type; }
+      
+  private:
+      std::string name;
+      std::vector<std::pair<std::string, Type>> parameters;
+      Type returnType = INT32_T; // Default return type
+  };
+  
+  #endif // DEF_FONCTION_H
