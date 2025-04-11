@@ -7,13 +7,13 @@ antlrcpp::Any CodeGenVisitor::visitProgs(ifccParser::ProgsContext *ctx) {
     IR ir;
     for (auto prog : ctx->def_func()) {
         this->visit(prog);
-        //ir.AddCFG(currentCFG);
+        ir.AddCFG(currentCFG);
         currentCFG = nullptr; // Transfer ownership to IR
     }
     
     // Generate final assembly
     std::cout << ".globl main\n";
-    //ir.GenerateAsm(std::cout);
+    ir.GenerateAsm(std::cout);
     return 0;
 }
 
@@ -60,6 +60,10 @@ antlrcpp::Any CodeGenVisitor::visitReturn_stmt(ifccParser::Return_stmtContext *c
     this->visit(ctx->expr());
     currentBB->add_IRInstr(IRInstr::ret, INT32_T, {"%eax"});
     return 0;
+}
+
+antlrcpp::Any CodeGenVisitor::visitExpr(ifccParser::ExprContext *ctx){
+    return nullptr;
 }
 
 // Expression visits

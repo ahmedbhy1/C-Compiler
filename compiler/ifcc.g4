@@ -5,7 +5,7 @@ axiom : progs ;
 
 progs: def_func+;
 
-def_func: TYPE ID '(' param_list? ')' '{' stmt* '}';
+def_func: 'int' ID '(' param_list? ')' '{' stmt* '}';
 
 
 stmt : decl_stmt
@@ -54,7 +54,7 @@ CONST  : [0-9]+|'\'' . '\'' ;                 // Match integer constants
 COMMENT : '/*' .*? '*/' -> skip ;  // Skip comments
 DIRECTIVE : '#' .*? '\n' -> skip ; // Skip preprocessor directives
 WS     : [ \t\r\n]+ -> channel(HIDDEN) ; // Skip whitespace
-
+TYPE : 'int' | 'void' ;
 COMP: '==' | '!=' | '>' | '<' | '>=' | '<=';
 UNARY :  '!';
 OR : '|';

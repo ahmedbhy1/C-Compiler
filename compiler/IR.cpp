@@ -7,7 +7,7 @@ IRInstr::IRInstr(BasicBlock* bb_, Operation op, Type t, std::vector<std::string>
     : bb(bb_), op(op), t(t), params(params) {}
 
 void IRInstr::gen_asm(std::ostream &o) {
-	
+	std::cout<<"show instruction: "<<op<<std::endl ;
     switch(op) {
         case ldconst:
             o << "    movl $" << params[1] << ", -" << bb->cfg->get_var_index(params[0]) << "(%rbp)\n";
@@ -101,7 +101,8 @@ void IRInstr::gen_asm(std::ostream &o) {
             o << "    jmp " << params[0] << "\n";
             break;
         default:
-            throw std::runtime_error("Unsupported IR operation");
+            std::cout<<"we dont need to show anything : " <<std::endl;
+            //throw std::runtime_error("Unsupported IR operation");
     }
 }
 
@@ -115,6 +116,7 @@ void BasicBlock::add_IRInstr(IRInstr::Operation op, Type t, std::vector<std::str
 
 void BasicBlock::gen_asm(std::ostream &o) {
     o << label << ":\n";
+    std::cout<<"number of instrs"<<instrs.size()<<std::endl;
     for (IRInstr* instr : instrs) {
         instr->gen_asm(o);
     }
@@ -197,9 +199,12 @@ bool CFG::gen_asm_epilogue(std::ostream& o) {
 
 void CFG::gen_asm(std::ostream& o) {
     gen_asm_prologue(o);
+    std::cout<<"we start showing the blocks"<<std::endl;
     for (BasicBlock* bb : bbs) {
+        std::cout<<"show the blocks"<<std::endl;
         bb->gen_asm(o);
     }
+    std::cout<<"show to epilog"<<std::endl;
     gen_asm_epilogue(o);
 }
 

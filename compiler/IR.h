@@ -150,7 +150,7 @@ class CFG {
 
 	// x86 code generation: could be encapsulated in a processor class in a retargetable compiler
 	void gen_asm(std::ostream& o);
-	std::string CFG::IR_reg_to_asm(std::string reg, std::string scope, Type type); /**< helper method: inputs a IR reg or input variable, returns e.g. "-24(%rbp)" for the proper value of 24 */
+	std::string IR_reg_to_asm(std::string reg, std::string scope, Type type); /**< helper method: inputs a IR reg or input variable, returns e.g. "-24(%rbp)" for the proper value of 24 */
 	bool gen_asm_prologue(std::ostream& o);
 	bool gen_asm_epilogue(std::ostream& o);
 
@@ -160,7 +160,7 @@ class CFG {
 	std::string create_new_tempvar(Type t);
 	int get_var_inde(std::string name);
 	Type get_var_type(std::string name);
-  int CFG::get_var_index(std::string name);
+  int get_var_index(std::string name);
 
 	// basic block management
 	std::string new_BB_name();
@@ -187,14 +187,11 @@ class CFG {
 
 class IR {
     public:
+      ~IR();
       void GenerateAsm(std::ostream & o);
 
       void AddCFG(CFG * newCFG);
       void gen_asm_prologue_global(std::ostream & o);
-  
-      IR() = default;
-      virtual ~IR();
-  
     
     std::vector<CFG *> allCFG;
   };
