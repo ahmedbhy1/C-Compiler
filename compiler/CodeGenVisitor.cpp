@@ -1,29 +1,23 @@
 #include "CodeGenVisitor.h"
 #include <iostream>
 
-// Constructor/Destructor
-CodeGenVisitor::CodeGenVisitor() : currentCFG(nullptr), currentBB(nullptr) {}
-
-CodeGenVisitor::~CodeGenVisitor() {
-    if (currentCFG) delete currentCFG;
-}
 
 // Program and function visits
 antlrcpp::Any CodeGenVisitor::visitProgs(ifccParser::ProgsContext *ctx) {
     IR ir;
-    for (auto prog : ctx->prog()) {
+    for (auto prog : ctx->def_func()) {
         this->visit(prog);
-        ir.AddCFG(currentCFG);
+        //ir.AddCFG(currentCFG);
         currentCFG = nullptr; // Transfer ownership to IR
     }
     
     // Generate final assembly
     std::cout << ".globl main\n";
-    ir.GenerateAsm(std::cout);
+    //ir.GenerateAsm(std::cout);
     return 0;
 }
 
-antlrcpp::Any CodeGenVisitor::visitProg(ifccParser::ProgContext *ctx) {
+antlrcpp::Any CodeGenVisitor::visitDef_func(ifccParser::Def_funcContext *ctx) {
     std::string name = ctx->ID()->getText();
     currentCFG = new CFG(new DefFonction(name));
     currentBB = currentCFG->get_current_bb();
@@ -296,7 +290,3 @@ antlrcpp::Any CodeGenVisitor::visitFunct(ifccParser::FunctContext *ctx) {
     return 0;
 }
 
-// Helper method
-std::string CodeGenVisitor::newTemp() {
-    return currentCFG->create_new_tempvar(INT32_T);
-}

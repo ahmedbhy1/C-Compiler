@@ -12,7 +12,7 @@
 class  CodeGenVisitor : public ifccBaseVisitor {
 	public:
         virtual antlrcpp::Any visitProgs(ifccParser::ProgsContext *ctx) override;
-        virtual antlrcpp::Any visitProg(ifccParser::ProgContext *ctx) override;
+        virtual antlrcpp::Any visitDef_func(ifccParser::Def_funcContext *ctx) override;
         virtual antlrcpp::Any visitDecl_stmt(ifccParser::Decl_stmtContext *ctx) override;
         virtual antlrcpp::Any visitReturn_stmt(ifccParser::Return_stmtContext *ctx) override;
         virtual antlrcpp::Any visitConst(ifccParser::ConstContext *ctx) override;
@@ -38,14 +38,14 @@ class  CodeGenVisitor : public ifccBaseVisitor {
         
         
 private:
-        CFG* currentCFG;
-        BasicBlock* currentBB;
+        CFG* currentCFG = nullptr;
+        BasicBlock* currentBB = nullptr;
         std::map<std::string, std::pair<int,int>> symbolTable;
         std::unordered_set<std::string> usedVariables;
         int stackOffset = 0;
         int tempCounter = 0;
         std::string newTemp() {
-                return "#temp_" + std::to_string(tempCounter++);
+                return currentCFG->create_new_tempvar(INT32_T);
         }
         std::stack<std::string> breakLabels; 
         std::stack<std::string> continueLabels;
