@@ -56,9 +56,8 @@ IRInstr::IRInstr(BasicBlock* bb_, Operation op, Type t, std::vector<std::string>
                 o << "    movl %eax, " << first << "\n";
                 break;
             case sub:
-                o << "    movl " << second << ", %eax\n";
-                o << "    subl " << third << ", %eax\n";
-                o << "    movl %eax, " << first << "\n";
+                o << "    subl " << third << ", "+second+"\n";
+                o << "    movl "+second << ", %eax\n";
                 break;
             case mul:
                 o << "    movl " << second << ", %eax\n";
