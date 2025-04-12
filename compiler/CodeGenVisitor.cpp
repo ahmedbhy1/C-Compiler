@@ -116,7 +116,7 @@ antlrcpp::Any CodeGenVisitor::visitAnd(ifccParser::AndContext *ctx) {
         currentBB->add_IRInstr(IRInstr::copy, INT32_T, {temp, "%eax"});
         
         this->visit(ctx->expr(1));
-        currentBB->add_IRInstr(IRInstr::andB, INT32_T, {"%eax", "%eax", temp});
+        currentBB->add_IRInstr(IRInstr::andB, INT32_T, {"%eax", temp, temp});
     }
     return 0;
 }

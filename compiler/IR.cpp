@@ -41,6 +41,9 @@ IRInstr::IRInstr(BasicBlock* bb_, Operation op, Type t, std::vector<std::string>
         int x;
     
         switch(op) {
+            case andB:
+                o << "    andl " << second << ", " << first << "\n";
+                break;
             case ldconst:
                 o << "    movl $" << second << ", " << first << "\n";
                 break;
