@@ -58,6 +58,7 @@ class IRInstr {
         cmp_le,
         ret,
         jmp,
+        je,
         call_getchar,
         call_putchar,
         prologue

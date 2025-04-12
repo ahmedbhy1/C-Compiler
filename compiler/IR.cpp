@@ -140,6 +140,10 @@ IRInstr::IRInstr(BasicBlock* bb_, Operation op, Type t, std::vector<std::string>
             case jmp:
                 o << "    jmp " << params[0] << "\n";
                 break;
+            case je:
+                o << "    cmp $0, %eax \n"; 
+                o << "    je " << params[0] << "\n";
+                break;
             case prologue:
                 x = 1;
                 break;
