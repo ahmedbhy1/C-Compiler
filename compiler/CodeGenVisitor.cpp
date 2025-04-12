@@ -257,7 +257,7 @@ antlrcpp::Any CodeGenVisitor::visitIf_stmt(ifccParser::If_stmtContext *ctx) {
     std::string endLabel = currentCFG->new_BB_name();
     
     // Create conditional jump
-    currentBB->add_IRInstr(IRInstr::jmp, INT32_T, {falseLabel});
+    currentBB->add_IRInstr(IRInstr::je, INT32_T, {falseLabel});
     
     // True branch
     BasicBlock* trueBB = new BasicBlock(currentCFG, currentCFG->new_BB_name());
