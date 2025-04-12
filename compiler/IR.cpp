@@ -6,105 +6,139 @@
 IRInstr::IRInstr(BasicBlock* bb_, Operation op, Type t, std::vector<std::string> params)
     : bb(bb_), op(op), t(t), params(params) {}
 
-void IRInstr::gen_asm(std::ostream &o) {
-	std::cout<<"show instruction: "<<op<<std::endl ;
-    switch(op) {
-        case ldconst:
-            o << "    movl $" << params[1] << ", -" << bb->cfg->get_var_index(params[0]) << "(%rbp)\n";
-            break;
-        case copy:
-            o << "    movl -" << bb->cfg->get_var_index(params[1]) << "(%rbp), %eax\n";
-            o << "    movl %eax, -" << bb->cfg->get_var_index(params[0]) << "(%rbp)\n";
-            break;
-        case add:
-            o << "    movl -" << bb->cfg->get_var_index(params[1]) << "(%rbp), %eax\n";
-            o << "    addl -" << bb->cfg->get_var_index(params[2]) << "(%rbp), %eax\n";
-            o << "    movl %eax, -" << bb->cfg->get_var_index(params[0]) << "(%rbp)\n";
-            break;
-        case sub:
-            o << "    movl -" << bb->cfg->get_var_index(params[1]) << "(%rbp), %eax\n";
-            o << "    subl -" << bb->cfg->get_var_index(params[2]) << "(%rbp), %eax\n";
-            o << "    movl %eax, -" << bb->cfg->get_var_index(params[0]) << "(%rbp)\n";
-            break;
-        case mul:
-            o << "    movl -" << bb->cfg->get_var_index(params[1]) << "(%rbp), %eax\n";
-            o << "    imull -" << bb->cfg->get_var_index(params[2]) << "(%rbp), %eax\n";
-            o << "    movl %eax, -" << bb->cfg->get_var_index(params[0]) << "(%rbp)\n";
-            break;
-        case div:
-            o << "    movl -" << bb->cfg->get_var_index(params[1]) << "(%rbp), %eax\n";
-            o << "    cltd\n";
-            o << "    idivl -" << bb->cfg->get_var_index(params[2]) << "(%rbp)\n";
-            o << "    movl %eax, -" << bb->cfg->get_var_index(params[0]) << "(%rbp)\n";
-            break;
-        case cmp_eq:
-            o << "    movl -" << bb->cfg->get_var_index(params[1]) << "(%rbp), %eax\n";
-            o << "    cmpl -" << bb->cfg->get_var_index(params[2]) << "(%rbp), %eax\n";
-            o << "    sete %al\n";
-            o << "    movzbl %al, %eax\n";
-            o << "    movl %eax, -" << bb->cfg->get_var_index(params[0]) << "(%rbp)\n";
-            break;
-        case cmp_neq:
-            o << "    movl -" << bb->cfg->get_var_index(params[1]) << "(%rbp), %eax\n";
-            o << "    cmpl -" << bb->cfg->get_var_index(params[2]) << "(%rbp), %eax\n";
-            o << "    setne %al\n";
-            o << "    movzbl %al, %eax\n";
-            o << "    movl %eax, -" << bb->cfg->get_var_index(params[0]) << "(%rbp)\n";
-            break;
-        case cmp_ge:
-            o << "    movl -" << bb->cfg->get_var_index(params[1]) << "(%rbp), %eax\n";
-            o << "    cmpl -" << bb->cfg->get_var_index(params[2]) << "(%rbp), %eax\n";
-            o << "    setge %al\n";
-            o << "    movzbl %al, %eax\n";
-            o << "    movl %eax, -" << bb->cfg->get_var_index(params[0]) << "(%rbp)\n";
-            break;
-        case cmp_g:
-            o << "    movl -" << bb->cfg->get_var_index(params[1]) << "(%rbp), %eax\n";
-            o << "    cmpl -" << bb->cfg->get_var_index(params[2]) << "(%rbp), %eax\n";
-            o << "    setg %al\n";
-            o << "    movzbl %al, %eax\n";
-            o << "    movl %eax, -" << bb->cfg->get_var_index(params[0]) << "(%rbp)\n";
-            break;
-        case cmp_l:
-            o << "    movl -" << bb->cfg->get_var_index(params[1]) << "(%rbp), %eax\n";
-            o << "    cmpl -" << bb->cfg->get_var_index(params[2]) << "(%rbp), %eax\n";
-            o << "    setl %al\n";
-            o << "    movzbl %al, %eax\n";
-            o << "    movl %eax, -" << bb->cfg->get_var_index(params[0]) << "(%rbp)\n";
-            break;
-        case cmp_le:
-            o << "    movl -" << bb->cfg->get_var_index(params[1]) << "(%rbp), %eax\n";
-            o << "    cmpl -" << bb->cfg->get_var_index(params[2]) << "(%rbp), %eax\n";
-            o << "    setle %al\n";
-            o << "    movzbl %al, %eax\n";
-            o << "    movl %eax, -" << bb->cfg->get_var_index(params[0]) << "(%rbp)\n";
-            break;
-        case neg:
-            o << "    movl -" << bb->cfg->get_var_index(params[1]) << "(%rbp), %eax\n";
-            o << "    negl %eax\n";
-            o << "    movl %eax, -" << bb->cfg->get_var_index(params[0]) << "(%rbp)\n";
-            break;
-        case call:
-            o << "    call " << params[0] << "\n";
-            if (params.size() > 1) {
-                o << "    movl %eax, -" << bb->cfg->get_var_index(params[1]) << "(%rbp)\n";
+    void IRInstr::gen_asm(std::ostream &o) {
+        std::string first;
+        std::string second;
+        std::string third;
+        //o<< "params size"<<params.size()<<" op: "<< op <<"\n";
+        
+        if (params.size()){
+            //o << "params[0]=" << params[0] << "\n";
+            if (!bb->cfg->isitin_index_table(params[0])) {
+                first = params[0];
+            } else {
+                first = "-" + std::to_string(bb->cfg->get_var_index(params[0])) + "(%rbp)";
             }
-            break;
-        case ret:
-            if (!params.empty()) {
-                o << "    movl -" << bb->cfg->get_var_index(params[0]) << "(%rbp), %eax\n";
+        }
+        if (params.size() > 1 ){
+            //o << "params[1]=" << params[1] << "\n";
+            if (!bb->cfg->isitin_index_table(params[1])){
+                second = params[1];
+            }else{
+                second = "-" + std::to_string(bb->cfg->get_var_index(params[1])) + "(%rbp)";
             }
-            o << "    leave\n";
-            o << "    ret\n";
-            break;
-        case jmp:
-            o << "    jmp " << params[0] << "\n";
-            break;
-        default:
-            std::cout<<"we dont need to show anything : " <<std::endl;
-            //throw std::runtime_error("Unsupported IR operation");
+        }
+        
+        if (params.size() > 2 ){
+            //o << "params[2]=" << params[2] << "\n";
+            if(!bb->cfg->isitin_index_table(params[2])){
+                third = params[2];
+            }else{
+                third = "-" + std::to_string(bb->cfg->get_var_index(params[2])) + "(%rbp)";
+            }
+        }
+        
+        int x;
+    
+        switch(op) {
+            case ldconst:
+                o << "    movl $" << second << ", " << first << "\n";
+                break;
+            case copy:
+                o << "    movl " << second << ", " << first << "\n";
+                break;
+            case add:
+                o << "    movl " << second << ", %eax\n";
+                o << "    addl " << third << ", %eax\n";
+                o << "    movl %eax, " << first << "\n";
+                break;
+            case sub:
+                o << "    movl " << second << ", %eax\n";
+                o << "    subl " << third << ", %eax\n";
+                o << "    movl %eax, " << first << "\n";
+                break;
+            case mul:
+                o << "    movl " << second << ", %eax\n";
+                o << "    imull " << third << ", %eax\n";
+                o << "    movl %eax, " << first << "\n";
+                break;
+            case div:
+                o << "    movl " << second << ", %eax\n";
+                o << "    cltd\n";
+                o << "    idivl " << third << "\n";
+                o << "    movl %eax, " << first << "\n";
+                break;
+            case cmp_eq:
+                o << "    movl " << second << ", %eax\n";
+                o << "    cmpl " << third << ", %eax\n";
+                o << "    sete %al\n";
+                o << "    movzbl %al, %eax\n";
+                o << "    movl %eax, " << first << "\n";
+                break;
+            case cmp_neq:
+                o << "    movl " << second << ", %eax\n";
+                o << "    cmpl " << third << ", %eax\n";
+                o << "    setne %al\n";
+                o << "    movzbl %al, %eax\n";
+                o << "    movl %eax, " << first << "\n";
+                break;
+            case cmp_ge:
+                o << "    movl " << second << ", %eax\n";
+                o << "    cmpl " << third << ", %eax\n";
+                o << "    setge %al\n";
+                o << "    movzbl %al, %eax\n";
+                o << "    movl %eax, " << first << "\n";
+                break;
+            case cmp_g:
+                o << "    movl " << second << ", %eax\n";
+                o << "    cmpl " << third << ", %eax\n";
+                o << "    setg %al\n";
+                o << "    movzbl %al, %eax\n";
+                o << "    movl %eax, " << first << "\n";
+                break;
+            case cmp_l:
+                o << "    movl " << second << ", %eax\n";
+                o << "    cmpl " << third << ", %eax\n";
+                o << "    setl %al\n";
+                o << "    movzbl %al, %eax\n";
+                o << "    movl %eax, " << first << "\n";
+                break;
+            case cmp_le:
+                o << "    movl " << second << ", %eax\n";
+                o << "    cmpl " << third << ", %eax\n";
+                o << "    setle %al\n";
+                o << "    movzbl %al, %eax\n";
+                o << "    movl %eax, " << first << "\n";
+                break;
+            case neg:
+                o << "    movl " << second << ", %eax\n";
+                o << "    negl %eax\n";
+                o << "    movl %eax, " << first << "\n";
+                break;
+            case call:
+                o << "    call " << params[0] << "\n";
+                if (params.size() > 1) {
+                    o << "    movl %eax, " << first << "\n";
+                }
+                break;
+            case ret:
+                if (!params.empty()) {
+                    o << "    movl " << first << ", %eax\n";
+                }
+                o << "    leave\n";
+                o << "    ret\n";
+                break;
+            case jmp:
+                o << "    jmp " << params[0] << "\n";
+                break;
+            case prologue:
+                x = 1;
+                break;
+            default:
+                x = 1;
+                //throw std::runtime_error("Unsupported IR operation");
+        }
     }
-}
 
 // BasicBlock implementation
 BasicBlock::BasicBlock(CFG* cfg, std::string entry_label)
@@ -116,7 +150,6 @@ void BasicBlock::add_IRInstr(IRInstr::Operation op, Type t, std::vector<std::str
 
 void BasicBlock::gen_asm(std::ostream &o) {
     o << label << ":\n";
-    std::cout<<"number of instrs"<<instrs.size()<<std::endl;
     for (IRInstr* instr : instrs) {
         instr->gen_asm(o);
     }
@@ -161,16 +194,23 @@ std::string CFG::create_new_tempvar(Type t) {
     return temp;
 }
 
+bool CFG::isitin_index_table(std::string name) {
+    if (SymbolIndex.find(name) == SymbolIndex.end()) {
+        return false;
+    }
+    return true;
+}
+
 int CFG::get_var_index(std::string name) {
     if (SymbolIndex.find(name) == SymbolIndex.end()) {
-        throw std::runtime_error("Variable '" + name + "' not declared");
+        throw std::runtime_error("Variable index'" + name + "' not declared");
     }
     return SymbolIndex[name];
 }
 
 Type CFG::get_var_type(std::string name) {
     if (SymbolType.find(name) == SymbolType.end()) {
-        throw std::runtime_error("Variable '" + name + "' not declared");
+        throw std::runtime_error("Variable type'" + name + "' not declared");
     }
     return SymbolType[name];
 }
@@ -199,12 +239,9 @@ bool CFG::gen_asm_epilogue(std::ostream& o) {
 
 void CFG::gen_asm(std::ostream& o) {
     gen_asm_prologue(o);
-    std::cout<<"we start showing the blocks"<<std::endl;
     for (BasicBlock* bb : bbs) {
-        std::cout<<"show the blocks"<<std::endl;
         bb->gen_asm(o);
     }
-    std::cout<<"show to epilog"<<std::endl;
     gen_asm_epilogue(o);
 }
 

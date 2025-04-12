@@ -161,7 +161,7 @@ class CFG {
 	int get_var_inde(std::string name);
 	Type get_var_type(std::string name);
   int get_var_index(std::string name);
-
+  bool isitin_index_table(std::string name);
 	// basic block management
 	std::string new_BB_name();
 	BasicBlock* current_bb;

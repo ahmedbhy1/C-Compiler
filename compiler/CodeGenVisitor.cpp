@@ -12,10 +12,10 @@ antlrcpp::Any CodeGenVisitor::visitProgs(ifccParser::ProgsContext *ctx) {
     }
     
     // Generate final assembly
-    std::cout << ".globl main\n";
+    //std::cout << ".globl main\n";
     ir.GenerateAsm(std::cout);
     return 0;
-}
+}  
 
 antlrcpp::Any CodeGenVisitor::visitDef_func(ifccParser::Def_funcContext *ctx) {
     std::string name = ctx->ID()->getText();
@@ -39,6 +39,7 @@ antlrcpp::Any CodeGenVisitor::visitDef_func(ifccParser::Def_funcContext *ctx) {
 antlrcpp::Any CodeGenVisitor::visitDecl_stmt(ifccParser::Decl_stmtContext *ctx) {
     for (auto decl : ctx->equalexpr_stmt()) {
         std::string varName = decl->ID()->getText();
+        //std::cout<<"we declared: "<<varName<<std::endl;
         currentCFG->add_to_symbol_table(varName, INT32_T);
         
         if (decl->expr()) {
