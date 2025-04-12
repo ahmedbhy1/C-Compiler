@@ -268,12 +268,14 @@ antlrcpp::Any CodeGenVisitor::visitIf_stmt(ifccParser::If_stmtContext *ctx) {
     
     // False branch (if exists)
     if (ctx->else_stmt()) {
+        
         BasicBlock* falseBB = new BasicBlock(currentCFG, falseLabel);
         currentCFG->add_bb(falseBB);
         currentBB = falseBB;
-        this->visit(ctx->stmt(1));
+        this->visit(ctx->else_stmt());
         currentBB->add_IRInstr(IRInstr::jmp, INT32_T, {endLabel});
-    } else {
+        
+        } else {
         BasicBlock* falseBB = new BasicBlock(currentCFG, falseLabel);
         currentCFG->add_bb(falseBB);
         currentBB = falseBB;

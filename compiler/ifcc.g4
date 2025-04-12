@@ -19,8 +19,9 @@ stmt : decl_stmt
      | block
      ;
 
-if_stmt : 'if' '(' expr ')' '{' stmt* '}' else_stmt? ;
-else_stmt : 'else' ( '{' stmt* '}' | if_stmt ) ;
+if_stmt: ('if' '(' expr ')' '{' stmt* '}' else_stmt?);
+else_stmt: 'else' '{' stmt* '}';
+
 continue_stmt : 'continue' ';' ;
 break_stmt : 'break' ';' ;
 getchar_stmt : 'getchar' '(' ID ')' ';' ;
