@@ -128,7 +128,7 @@ antlrcpp::Any CodeGenVisitor::visitOr(ifccParser::OrContext *ctx) {
         currentBB->add_IRInstr(IRInstr::copy, INT32_T, {temp, "%eax"});
         
         this->visit(ctx->expr(1));
-        currentBB->add_IRInstr(IRInstr::orB, INT32_T, {"%eax", "%eax", temp});
+        currentBB->add_IRInstr(IRInstr::orB, INT32_T, {"%eax", temp, temp});
     }
     return 0;
 }
