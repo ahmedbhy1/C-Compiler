@@ -72,11 +72,19 @@ IRInstr::IRInstr(BasicBlock* bb_, Operation op, Type t, std::vector<std::string>
                 o << "    movl %eax, " << first << "\n";
                 break;
             case div:
+                o << "    movl " << "%eax" << ", %ecx\n";
                 o << "    movl " << second << ", %eax\n";
                 o << "    cltd\n";
-                o << "    idivl " << third << "\n";
+                o << "    idivl " << "%ecx" << "\n";
                 o << "    movl %eax, " << first << "\n";
                 break;
+            case mod:
+            o << "    movl " << "%eax" << ", %ecx\n";
+            o << "    movl " << second << ", %eax\n";
+            o << "    cltd\n";
+            o << "    idivl " << "%ecx" << "\n";
+            o << "    movl %edx, " << first << "\n";  // The remainder is in %edx
+            break;
             case cmp_eq:
                 o << "    movl " << second << ", %eax\n";
                 o << "    cmpl " << third << ", %eax\n";
