@@ -140,7 +140,7 @@ antlrcpp::Any CodeGenVisitor::visitXor(ifccParser::XorContext *ctx) {
         currentBB->add_IRInstr(IRInstr::copy, INT32_T, {temp, "%eax"});
         
         this->visit(ctx->expr(1));
-        currentBB->add_IRInstr(IRInstr::xorB, INT32_T, {"%eax", "%eax", temp});
+        currentBB->add_IRInstr(IRInstr::xorB, INT32_T, {"%eax", temp, temp});
     }
     return 0;
 }
@@ -208,7 +208,7 @@ antlrcpp::Any CodeGenVisitor::visitParent(ifccParser::ParentContext *ctx) {
 antlrcpp::Any CodeGenVisitor::visitMoin(ifccParser::MoinContext *ctx) {
     if (ctx->OPA() && ctx->OPA()->getText() == "-") {
         this->visit(ctx->expr());
-        currentBB->add_IRInstr(IRInstr::opp, INT32_T, {"%eax", "%eax"});
+        currentBB->add_IRInstr(IRInstr::neg, INT32_T, {"%eax", "%eax"});
     }
     return 0;
 }
