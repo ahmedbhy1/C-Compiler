@@ -44,9 +44,14 @@ IRInstr::IRInstr(BasicBlock* bb_, Operation op, Type t, std::vector<std::string>
             case andB:
                 o << "    andl " << second << ", " << first << "\n";
                 break;
+            case call_putchar:
+                o << "    subq $4, %rsp\n"; 
+                o << "    movl " << first << ", %edi\n";
+                o << "    call putchar\n";
+                o << "    movl %eax, " << first << "\n";
+                break;
             case xorB:
                 o << "    xorl " << second << ", " << first << "\n";
-            break;
             break;
             case orB:
                 o << "    orl " << second << ", " << first << "\n";
