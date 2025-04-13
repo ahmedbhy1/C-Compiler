@@ -16,11 +16,13 @@ stmt : decl_stmt
      | break_stmt
      | continue_stmt
      | if_stmt
+     | while_stmt
      | block
      ;
 
 if_stmt: ('if' '(' expr ')' '{' stmt* '}' else_stmt?);
 else_stmt: 'else' '{' stmt* '}';
+while_stmt : 'while' '(' expr ')' '{' stmt* '}' ;
 
 continue_stmt : 'continue' ';' ;
 break_stmt : 'break' ';' ;
