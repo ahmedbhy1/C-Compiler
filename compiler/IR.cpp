@@ -79,12 +79,12 @@ IRInstr::IRInstr(BasicBlock* bb_, Operation op, Type t, std::vector<std::string>
                 o << "    movl %eax, " << first << "\n";
                 break;
             case mod:
-            o << "    movl " << "%eax" << ", %ecx\n";
-            o << "    movl " << second << ", %eax\n";
-            o << "    cltd\n";
-            o << "    idivl " << "%ecx" << "\n";
-            o << "    movl %edx, " << first << "\n";  // The remainder is in %edx
-            break;
+                o << "    movl " << "%eax" << ", %ecx\n";
+                o << "    movl " << second << ", %eax\n";
+                o << "    cltd\n";
+                o << "    idivl " << "%ecx" << "\n";
+                o << "    movl %edx, " << first << "\n";  // The remainder is in %edx
+                break;
             case cmp_eq:
                 o << "    movl " << second << ", %eax\n";
                 o << "    cmpl " << third << ", %eax\n";
@@ -134,9 +134,6 @@ IRInstr::IRInstr(BasicBlock* bb_, Operation op, Type t, std::vector<std::string>
                 break;
             case call:
                 o << "    call " << params[0] << "\n";
-                if (params.size() > 1) {
-                    o << "    movl %eax, " << first << "\n";
-                }
                 break;
             case ret:
                 if (!params.empty()) {
@@ -226,7 +223,7 @@ int CFG::get_var_index(std::string name) {
     if (SymbolIndex.find(name) == SymbolIndex.end()) {
         throw std::runtime_error("Variable index'" + name + "' not declared");
     }
-    return SymbolIndex[name];
+    return SymbolIndex[name]+4;
 }
 
 Type CFG::get_var_type(std::string name) {
