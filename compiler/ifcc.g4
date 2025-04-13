@@ -1,10 +1,12 @@
 grammar ifcc;
 
-axiom : progs EOF ;
+axiom : progs ;
 
-progs : prog* ;
-prog : 'int' ID '(' ')' '{' stmt* '}'
-     | 'void' ID '(' ')' '{' stmt* '}';
+
+progs: def_func+;
+
+def_func: 'int' ID '(' param_list? ')' '{' stmt* '}';
+
 
 stmt : decl_stmt
      | assign_stmt
@@ -13,8 +15,14 @@ stmt : decl_stmt
      | getchar_stmt
      | break_stmt
      | continue_stmt
+     | if_stmt
+     | while_stmt
+     | block
      ;
 
+if_stmt: ('if' '(' expr ')' '{' stmt* '}' else_stmt?);
+else_stmt: 'else' '{' stmt* '}';
+while_stmt : 'while' '(' expr ')' '{' stmt* '}' ;
 
 continue_stmt : 'continue' ';' ;
 break_stmt : 'break' ';' ;
@@ -24,7 +32,9 @@ decl_stmt : 'int' equalexpr_stmt (',' equalexpr_stmt )* ';' | 'char' equalexpr_s
 equalexpr_stmt : ID ('=' expr)? ;
 assign_stmt : ID '=' expr ';' ;
 return_stmt : RETURN expr ';' ;
-
+block: '{' stmt* '}';
+param_list: param (',' param)*;
+param: TYPE ID;
 
 expr : UNARY expr # unary
      | OPA expr # moin
@@ -47,7 +57,7 @@ CONST  : [0-9]+|'\'' . '\'' ;                 // Match integer constants
 COMMENT : '/*' .*? '*/' -> skip ;  // Skip comments
 DIRECTIVE : '#' .*? '\n' -> skip ; // Skip preprocessor directives
 WS     : [ \t\r\n]+ -> channel(HIDDEN) ; // Skip whitespace
-
+TYPE : 'int' | 'void' ;
 COMP: '==' | '!=' | '>' | '<' | '>=' | '<=';
 UNARY :  '!';
 OR : '|';
