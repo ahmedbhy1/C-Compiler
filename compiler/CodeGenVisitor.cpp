@@ -263,7 +263,9 @@ antlrcpp::Any CodeGenVisitor::visitIf_stmt(ifccParser::If_stmtContext *ctx) {
     BasicBlock* trueBB = new BasicBlock(currentCFG, currentCFG->new_BB_name());
     currentCFG->add_bb(trueBB);
     currentBB = trueBB;
-    this->visit(ctx->stmt(0));
+    for (auto s : ctx->stmt()) {
+        this->visit(s);
+    }   
     currentBB->add_IRInstr(IRInstr::jmp, INT32_T, {endLabel});
     
     // False branch (if exists)
@@ -288,6 +290,47 @@ antlrcpp::Any CodeGenVisitor::visitIf_stmt(ifccParser::If_stmtContext *ctx) {
     
     return 0;
 }
+antlrcpp::Any CodeGenVisitor::visitWhile_stmt(ifccParser::While_stmtContext *ctx) {
+
+    // Create labels for the loop blocks
+    std::string condLabel = currentCFG->new_BB_name(); // Loop condition
+    std::string bodyLabel = currentCFG->new_BB_name(); // Loop body
+    std::string endLabel = currentCFG->new_BB_name();  // After loop
+
+    // Unconditional jump to condition check first
+    currentBB->add_IRInstr(IRInstr::jmp, INT32_T, {condLabel});
+
+    // Condition block
+    BasicBlock* condBB = new BasicBlock(currentCFG, condLabel);
+    currentCFG->add_bb(condBB);
+    currentBB = condBB;
+
+    // Evaluate the loop condition
+    this->visit(ctx->expr());
+    currentBB->add_IRInstr(IRInstr::je, INT32_T, {endLabel}); // Jump to end if false
+
+    // Body block
+    BasicBlock* bodyBB = new BasicBlock(currentCFG, bodyLabel);
+    currentCFG->add_bb(bodyBB);
+    currentBB = bodyBB;
+
+    // Visit the loop body
+    for (auto s : ctx->stmt()) {
+        this->visit(s);
+    }    
+
+    // Jump back to condition check
+    currentBB->add_IRInstr(IRInstr::jmp, INT32_T, {condLabel});
+
+    // End block (after loop)
+    BasicBlock* endBB = new BasicBlock(currentCFG, endLabel);
+    currentCFG->add_bb(endBB);
+    currentBB = endBB;
+
+    return 0;
+}
+
+
 
 antlrcpp::Any CodeGenVisitor::visitFunct(ifccParser::FunctContext *ctx) {
     if (ctx->ID() && ctx->OPENPARENT() && ctx->CLOSEPARENT()) {
