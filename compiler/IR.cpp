@@ -211,6 +211,19 @@ void CFG::add_to_symbol_table(std::string name, Type t) {
     nextFreeSymbolIndex += 4; // 4 bytes for integers
 }
 
+void CFG::isDevlaredButNotUsed(){
+    for (auto var : SymbolIndex) {
+        if (usedVariables.find(var.first) == usedVariables.end() && (var.first[0] != 't'&&var.first[0] != 'e')) {
+            std::cout << "#" << var.first << " is not visited \n" ;
+        } 
+    }
+}
+
+void CFG::addVariableToVisitedVars(std::string name){
+    usedVariables.insert(name);
+
+}
+
 std::string CFG::create_new_tempvar(Type t) {
     std::string temp = "temp_" + std::to_string(tempCounter++);
     add_to_symbol_table(temp, t);
@@ -286,6 +299,7 @@ void IR::GenerateAsm(std::ostream & o) {
     gen_asm_prologue_global(o);
     for (CFG* cfg : allCFG) {
         cfg->gen_asm(o);
+        cfg->isDevlaredButNotUsed();
     }
 }
 

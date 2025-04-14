@@ -163,6 +163,8 @@ class CFG {
 	Type get_var_type(std::string name);
   int get_var_index(std::string name);
   bool isitin_index_table(std::string name);
+  void isDevlaredButNotUsed();
+  void addVariableToVisitedVars(std::string name);
 	// basic block management
 	std::string new_BB_name();
 	BasicBlock* current_bb;
@@ -180,7 +182,7 @@ class CFG {
     std::stack<std::string> continueLabels;
     std::map<std::string, Type> SymbolType; /**< part of the symbol table  */
 	std::map<std::string, int> SymbolIndex; /**< part of the symbol table  */
-	int nextFreeSymbolIndex; /**< to allocate new symbols in the symbol table */
+  int nextFreeSymbolIndex; /**< to allocate new symbols in the symbol table */
 	int nextBBnumber; /**< just for naming */
 	
 	std::vector<BasicBlock*> bbs; /**< all the basic blocks of this CFG*/

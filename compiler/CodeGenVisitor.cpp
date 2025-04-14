@@ -10,9 +10,8 @@ antlrcpp::Any CodeGenVisitor::visitProgs(ifccParser::ProgsContext *ctx) {
         ir.AddCFG(currentCFG);
         currentCFG = nullptr; // Transfer ownership to IR
     }
-    
-    // Generate final assembly
-    //std::cout << ".globl main\n";
+
+    std::cout << ".globl main\n";
     ir.GenerateAsm(std::cout);
     return 0;
 }  
@@ -52,6 +51,7 @@ antlrcpp::Any CodeGenVisitor::visitDecl_stmt(ifccParser::Decl_stmtContext *ctx) 
 
 antlrcpp::Any CodeGenVisitor::visitAssign_stmt(ifccParser::Assign_stmtContext *ctx) {
     std::string varName = ctx->ID()->getText();
+    currentCFG->addVariableToVisitedVars(varName);
     this->visit(ctx->expr());
     currentBB->add_IRInstr(IRInstr::copy, INT32_T, {varName, "%eax"});
     return 0;

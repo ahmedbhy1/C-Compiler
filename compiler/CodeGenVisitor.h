@@ -42,7 +42,6 @@ private:
         CFG* currentCFG = nullptr;
         BasicBlock* currentBB = nullptr;
         std::map<std::string, std::pair<int,int>> symbolTable;
-        std::unordered_set<std::string> usedVariables;
         int stackOffset = 0;
         int tempCounter = 0;
         std::string newTemp() {
