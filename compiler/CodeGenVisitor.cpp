@@ -52,6 +52,9 @@ antlrcpp::Any CodeGenVisitor::visitDecl_stmt(ifccParser::Decl_stmtContext *ctx) 
 
 antlrcpp::Any CodeGenVisitor::visitAssign_stmt(ifccParser::Assign_stmtContext *ctx) {
     std::string varName = ctx->ID()->getText();
+    if(!currentCFG->isitin_index_table(varName)){
+        throw std::runtime_error("variable in not initiated");
+    }
     this->visit(ctx->expr());
     currentBB->add_IRInstr(IRInstr::copy, INT32_T, {varName, "%eax"});
     return 0;
