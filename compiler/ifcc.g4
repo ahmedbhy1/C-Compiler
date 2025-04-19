@@ -5,7 +5,7 @@ axiom : progs ;
 
 progs: def_func+;
 
-def_func: 'int' ID '(' param_list? ')' '{' stmt* '}';
+def_func: type ID '(' param_list? ')' '{' stmt* '}';
 
 
 stmt : decl_stmt
@@ -34,7 +34,7 @@ assign_stmt : ID '=' expr ';' ;
 return_stmt : RETURN expr ';' ;
 block: '{' stmt* '}';
 param_list: param (',' param)*;
-param: TYPE ID;
+param: type ID;
 
 expr : UNARY expr # unary
      | OPA expr # moin
@@ -51,13 +51,13 @@ expr : UNARY expr # unary
      |'getchar' '(' ')' # getchar_expr
      ;
 
+type : 'int' | 'void' ;
 RETURN : 'return' ;
 ID     : [a-zA-Z_][a-zA-Z_0-9]* ; // Match identifiers (e.g., variable names)
 CONST  : [0-9]+|'\'' . '\'' ;                 // Match integer constants
 COMMENT : '/*' .*? '*/' -> skip ;  // Skip comments
 DIRECTIVE : '#' .*? '\n' -> skip ; // Skip preprocessor directives
 WS     : [ \t\r\n]+ -> channel(HIDDEN) ; // Skip whitespace
-TYPE : 'int' | 'void' ;
 COMP: '==' | '!=' | '>' | '<' | '>=' | '<=';
 UNARY :  '!';
 OR : '|';
