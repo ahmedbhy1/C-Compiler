@@ -19,8 +19,10 @@ class DefFonction;
 
 typedef enum {
     INT32_T,
-    string
+    STRING
 }   Type;
+
+Type getTypes(std::string typeStr);
 
 //! The class for one 3-address instruction
 class IRInstr {
@@ -156,6 +158,7 @@ class CFG {
 	bool gen_asm_epilogue(std::ostream& o);
 
 	// symbol table methods
+  void add_param_to_symbol_table(std::string name, Type t);
 	void add_to_symbol_table(std::string name, Type t);
   BasicBlock* get_current_bb();
 	std::string create_new_tempvar(Type t);
@@ -167,6 +170,7 @@ class CFG {
 	std::string new_BB_name();
 	BasicBlock* current_bb;
 
+  
  protected:
  
     std::map<std::string, std::pair<int,int>> symbolTable;
@@ -176,14 +180,17 @@ class CFG {
     std::string newTemp() {
          return "#temp_" + std::to_string(tempCounter++);
     }
+    // Add this to track parameters
+    std::vector<std::pair<std::string, Type>> params;
+    int paramOffset = 0;  // To track where params are stored
     std::stack<std::string> breakLabels; 
     std::stack<std::string> continueLabels;
     std::map<std::string, Type> SymbolType; /**< part of the symbol table  */
-	std::map<std::string, int> SymbolIndex; /**< part of the symbol table  */
-	int nextFreeSymbolIndex; /**< to allocate new symbols in the symbol table */
-	int nextBBnumber; /**< just for naming */
+	  std::map<std::string, int> SymbolIndex; /**< part of the symbol table  */
+	  int nextFreeSymbolIndex; /**< to allocate new symbols in the symbol table */
+	  int nextBBnumber; /**< just for naming */
 	
-	std::vector<BasicBlock*> bbs; /**< all the basic blocks of this CFG*/
+	  std::vector<BasicBlock*> bbs; /**< all the basic blocks of this CFG*/
 };
 
 class IR {
@@ -209,9 +216,7 @@ class DefFonction {
       void setName(const std::string& newName) { name = newName; }
       
       // Add a parameter to the function
-      void addParameter(const std::string& paramName, Type paramType) {
-          parameters.push_back({paramName, paramType});
-      }
+      void addParameter(std::string paramName, std::string  paramType);
       
       // Get all parameters
       const std::vector<std::pair<std::string, Type>>& getParameters() const {

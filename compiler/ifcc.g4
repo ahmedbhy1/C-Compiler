@@ -46,11 +46,13 @@ expr : UNARY expr # unary
      | expr COMP expr # comp
      | CONST # const
      | ID OPENPARENT CLOSEPARENT # funct
+     | ID '(' arg_list? ')'      # callfunct
      | ID # id
      | OPENPARENT expr CLOSEPARENT # parent
      |'getchar' '(' ')' # getchar_expr
      ;
 
+arg_list: CONST (',' CONST)* ;
 type : 'int' | 'void' ;
 RETURN : 'return' ;
 ID     : [a-zA-Z_][a-zA-Z_0-9]* ; // Match identifiers (e.g., variable names)

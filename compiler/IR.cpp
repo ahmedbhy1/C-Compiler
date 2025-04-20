@@ -2,6 +2,13 @@
 #include <iostream>
 #include <sstream>
 
+const char* param_regs[] = {"%edi", "%esi", "%edx", "%ecx", "%r8d", "%r9d"};
+Type getTypes(std::string typeStr) {
+    if (typeStr == "int")return INT32_T;
+    else if (typeStr == "string")return STRING;
+    else throw std::invalid_argument("Unknown type: " + typeStr);
+}
+
 // IRInstr implementation
 IRInstr::IRInstr(BasicBlock* bb_, Operation op, Type t, std::vector<std::string> params)
     : bb(bb_), op(op), t(t), params(params) {}
@@ -138,6 +145,18 @@ IRInstr::IRInstr(BasicBlock* bb_, Operation op, Type t, std::vector<std::string>
                 o << "    movl %eax, " << first << "\n";
                 break;
             case call:
+                if (params.size()>1){
+                    for (int i =1;i<params.size();i++){
+                        std::string nthparam;
+                        if(!bb->cfg->isitin_index_table(params[i])){
+                            nthparam = params[i];
+                        }else{
+                            nthparam = "-" + std::to_string(bb->cfg->get_var_index(params[i])) + "(%rbp)";
+                        }
+                        
+                        o << "    movl " << nthparam <<", "<< param_regs[i-1] << "\n";        
+                    }
+                }
                 o << "    call " << params[0] << "\n";
                 break;
             case ret:
@@ -240,15 +259,34 @@ Type CFG::get_var_type(std::string name) {
 
 std::string CFG::IR_reg_to_asm(std::string reg, std::string scope, Type type) {
     if (SymbolIndex.find(reg) != SymbolIndex.end()) {
-        return "-" + std::to_string(SymbolIndex[reg]) + "(%rbp)";
+        int offset = SymbolIndex[reg];
+        if (offset < 0) {
+            // Parameter (stored above RBP)
+            return std::to_string(abs(offset)) + "(%rbp)";
+        } else {
+            // Local variable (stored below RBP)
+            return "-" + std::to_string(offset) + "(%rbp)";
+        }
     }
-    return reg; // For constants or other cases
+    return reg; // For constants or registers
 }
 
 bool CFG::gen_asm_prologue(std::ostream& o) {
     o << ast->getName() << ":\n";
     o << "    pushq %rbp\n";
     o << "    movq %rsp, %rbp\n";
+    
+    // Save parameter registers to stack
+    int reg_idx = 0;
+    for (const auto& param : params) {
+        if (reg_idx < 6) {  // First 6 params in registers
+            o << "    movl " << param_regs[reg_idx] << ", -" 
+              << get_var_index(param.first) << "(%rbp)\n";
+            reg_idx++;
+        }
+        // Additional params would be on stack at positive RBP offsets
+    }
+    
     o << "    subq $" << nextFreeSymbolIndex << ", %rsp\n";
     return true;
 }
@@ -267,6 +305,18 @@ void CFG::gen_asm(std::ostream& o) {
     }
     gen_asm_epilogue(o);
 }
+
+void CFG::add_param_to_symbol_table(std::string name, Type t) {
+    if (SymbolIndex.find(name) != SymbolIndex.end()) {
+        throw std::runtime_error("Parameter '" + name + "' already declared");
+    }
+    // Parameters are stored at positive offsets from RBP
+    SymbolIndex[name] =  nextFreeSymbolIndex + 8 + paramOffset;
+    SymbolType[name] = t;
+    paramOffset += 4;  // 4 bytes per parameter
+    params.emplace_back(name, t);
+}
+
 
 BasicBlock* CFG::get_current_bb(){
 	return current_bb;
@@ -294,3 +344,8 @@ IR::~IR() {
         delete cfg;
     }
 }
+
+//defFonction
+void DefFonction::addParameter(std::string paramName, std::string  paramType) {
+    parameters.push_back({paramName, getTypes(paramType)});
+  }

@@ -20,6 +20,16 @@ antlrcpp::Any CodeGenVisitor::visitProgs(ifccParser::ProgsContext *ctx) {
 antlrcpp::Any CodeGenVisitor::visitDef_func(ifccParser::Def_funcContext *ctx) {
     std::string name = ctx->ID()->getText();
     currentCFG = new CFG(new DefFonction(name));
+    
+    if (ctx ->param_list()){
+        for(auto i :ctx->param_list()->param()){
+            std::string name = i->ID()->getText();
+            std::string type = i->type()->getText();
+            currentCFG->add_param_to_symbol_table(name, getTypes(type));
+            currentCFG->ast->addParameter(name,type);
+        }
+    }
+    
     currentBB = currentCFG->get_current_bb();
     
     // Function prologue
@@ -340,6 +350,30 @@ antlrcpp::Any CodeGenVisitor::visitFunct(ifccParser::FunctContext *ctx) {
         std::string functionName = ctx->ID()->getText();
         currentBB->add_IRInstr(IRInstr::call, INT32_T, {functionName, "%eax"});
     }
+    return 0;
+}
+
+
+antlrcpp::Any CodeGenVisitor::visitCallfunct(ifccParser::CallfunctContext *ctx) {
+    std::string functionName = ctx->ID()->getText();
+    std::vector<std::string> params;
+    params.push_back(functionName);  // First parameter is function name
+
+    // Handle arguments if they exist
+    if (ctx->arg_list()) {
+        for (auto constArg : ctx->arg_list()->CONST()) {
+            std::string constValue = constArg->getText();
+            // For each constant argument, load it directly
+            std::string tempVar = currentCFG->create_new_tempvar(INT32_T);
+            currentBB->add_IRInstr(IRInstr::ldconst, INT32_T, {tempVar, constValue});
+            params.push_back(tempVar);
+        }
+    }
+
+    // Generate the call instruction
+    currentBB->add_IRInstr(IRInstr::call, INT32_T, params);
+    
+    
     return 0;
 }
 
