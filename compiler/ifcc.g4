@@ -52,7 +52,7 @@ expr : UNARY expr # unary
      |'getchar' '(' ')' # getchar_expr
      ;
 
-arg_list: CONST (',' CONST)* ;
+arg_list: (CONST|ID) (',' (CONST|ID))* ;
 type : 'int' | 'void' ;
 RETURN : 'return' ;
 ID     : [a-zA-Z_][a-zA-Z_0-9]* ; // Match identifiers (e.g., variable names)

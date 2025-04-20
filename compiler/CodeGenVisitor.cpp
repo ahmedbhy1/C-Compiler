@@ -368,6 +368,10 @@ antlrcpp::Any CodeGenVisitor::visitCallfunct(ifccParser::CallfunctContext *ctx) 
             currentBB->add_IRInstr(IRInstr::ldconst, INT32_T, {tempVar, constValue});
             params.push_back(tempVar);
         }
+        for (auto constArg : ctx->arg_list()->ID()) {
+            std::string constValue = constArg->getText();
+            params.push_back(constValue);
+        }
     }
 
     // Generate the call instruction

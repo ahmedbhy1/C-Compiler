@@ -4,6 +4,6 @@ int test(int a,int b) {
  }
  
  int main() {
-    int x,y,z;
-    return test(4,5);
+    int a=3,b=2;
+    return test(a,b);
  }
